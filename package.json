@@ -1,0 +1,38 @@
+{
+  "name": "hoontae24-blog",
+  "version": "0.0.1",
+  "title": "Stack Code",
+  "description": "A developer's blog",
+  "scripts": {
+    "dev": "bundle exec jekyll serve --drafts",
+    "publish": "rake publish"
+  },
+  "keywords": [
+    "blog",
+    "jekyll",
+    "github",
+    "developer",
+    "frontend"
+  ],
+  "homepage": "https://hoontae24.github.io/",
+  "bugs": {
+    "url": "https://github.com/hoontae24/hoontae24.github.io/",
+    "email": "kadr8941@gmail.com"
+  },
+  "license": "MIT",
+  "author": "Hoontae24",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hoontae24/hoontae24.github.io.git"
+  },
+  "dependencies": {
+    "bootstrap": "4.3.1",
+    "font-awesome": "4.7.0",
+    "jquery": "^3.5.1",
+    "startbootstrap-clean-blog": "5.0.8"
+  },
+  "devDependencies": {
+    "browser-sync": "2.26.7",
+    "gulp": "4.0.2"
+  }
+}

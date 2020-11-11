@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Javascript의 비동기 처리, Promise를 알아보자 | 코드블로그_
+    
+  </title>
+  <meta name="description" content="오늘은 자바스크립트에서 비동기 처리를 다루는 Promise에 대해 알아보겠습니다.">
+  <!-- Begin Jekyll SEO tag v2.6.1 -->
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Javascript의 비동기 처리, Promise를 알아보자" />
+<meta name="author" content="Hoontae" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="오늘은 자바스크립트에서 비동기 처리를 다루는 Promise에 대해 알아보겠습니다." />
+<meta property="og:description" content="오늘은 자바스크립트에서 비동기 처리를 다루는 Promise에 대해 알아보겠습니다." />
+<link rel="canonical" href="https://hoontae24.github.io/posts/6" />
+<meta property="og:url" content="https://hoontae24.github.io/posts/6" />
+<meta property="og:site_name" content="코드블로그_" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-12-28T00:00:00+09:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hoontae24.github.io/posts/6"},"datePublished":"2019-12-28T00:00:00+09:00","url":"https://hoontae24.github.io/posts/6","author":{"@type":"Person","name":"Hoontae"},"headline":"Javascript의 비동기 처리, Promise를 알아보자","dateModified":"2019-12-28T00:00:00+09:00","description":"오늘은 자바스크립트에서 비동기 처리를 다루는 Promise에 대해 알아보겠습니다.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+  <link rel='stylesheet' href='//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.css'>
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/assets/vendor/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+
+  <link href="/img/ico/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon"/>
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://hoontae24.github.io/posts/6">
+  <link rel="alternate" type="application/rss+xml" title="코드블로그_" href="/feed.xml">
+
+</head>
+
+<script>
+  const listeners = []
+  const onMount = listener => listeners.push(listener)
+  window.addEventListener('load', () => {
+    listeners.forEach(listener => listener && listener())
+  })
+</script>
+
+<body>
+  <!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="position: fixed;" id="mainNav">
+  <div class="navbar-wrapper">
+    <a class="navbar-brand" href="/" >
+      코드블로그_
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav ml-auto">
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="/">HOME</a>
+      </li> -->
+      <li class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </li>
+      <!-- <li class="nav-item">
+          <a class="nav-link" href="/tags">TAGS</a>
+      </li> -->
+      <li class="nav-item">
+          <a class="nav-link" href="/archives">ARCHIVES</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="/about">ABOUT</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+  <!-- Page Header -->
+
+<header
+  class="masthead"
+  style="background-image: url('/img/posts/promise/promise.png')"
+>
+  
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-heading">
+            <h1>Javascript의 비동기 처리, Promise를 알아보자</h1>
+            
+            <h2 class="subheading">Promise의 개념과 기본적인 사용법</h2>
+            
+            <span class="meta">
+              <!-- >Posted by
+              <a href="/about"
+                >Hoontae</a
+              >
+              on  -->
+              2019.12.28 &middot; <span class="reading-time" title="Estimated read time">
+  
+   13 mins  read </span>
+
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container post">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto wrapper">
+        
+
+<script>
+  const btnFolded = document.querySelector('.btn.folded')
+  const btnUnfolded = document.querySelector('.btn.unfolded')
+  btnFolded && btnFolded.classList.add('hidden')
+  btnUnfolded && btnUnfolded.classList.remove('hidden')  
+
+  function toggleFold () {
+    const btnFolded = document.querySelector('.btn.folded')
+    const btnUnfolded = document.querySelector('.btn.unfolded')
+    const titleWrapper = document.querySelector('.title-wrapper')
+    const itemWrapper = document.querySelector('.item-wrapper')
+    btnFolded.classList.toggle('hidden')
+    btnUnfolded.classList.toggle('hidden')
+    titleWrapper.classList.toggle('folded')
+    itemWrapper.classList.toggle('folded')
+  }
+</script>
+ <p>오늘은 자바스크립트에서 비동기 처리를 다루는 <strong>Promise</strong>에 대해 알아보겠습니다.</p>
+
+<h2 id="1-promise-왜-필요할까요">1. Promise? 왜 필요할까요?</h2>
+
+<p>자바스크립트 코드가 동작할 때, 어떠한 작업을 기다리게 된다면 어떻게 될까요? 만약 브라우저에서 실행되는 코드라면 웹 페이지의 동작이 멈추게 될 것입니다. 특히 웹 페이지에서는 1-2초의 먹통에도 사용자는 답답함을 느끼게 됩니다. 개발자는 이러한 상황을 만들지 않고 싶을 것입니다.</p>
+
+<p>자바스크립트는 그러한 상황에서 그 작업을 기다리지 않고 다음 작업을 수행하는 특성을 가지고 있습니다. 그래서 즉시 응답을 보장하지 못하는 경우에는 따로 비동기를 위한 처리를 해주어야 합니다. 대표적인 방법으로 기존에 많이 쓰였던 <strong>Callback</strong>함수를 이용한 패턴이 있습니다.</p>
+
+<p>예시 코드를 통해서 <strong>Callback</strong>함수를 사용하는 방식을 간단히 짚어보겠습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// getUsers: 사용자 목록을 불러오는 함수</span>
+<span class="nx">getUsers</span><span class="p">(</span><span class="nx">users</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">users</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">getUsers</code>라는 함수를 통해 사용자의 데이터를 불러오는 작업을 가정해봅시다. 불러오는 값이 즉시 반환되지 못하고, API서버나 DB 등에서 불러오는 작업을 한다면 비동기 작업으로 이루어집니다. <code class="highlighter-rouge">getUsers</code> 내부에서는 불러온 <code class="highlighter-rouge">users</code> 데이터를 <code class="highlighter-rouge">Callback</code>함수의 인자로 전달해 주어, 해당 데이터를 다룰 수 있게 됩니다.</p>
+
+<p>만약 이러한 작업이 여러 개이면 어떨까요?</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// getUsers: 사용자 목록을 불러오는 함수</span>
+<span class="c1">// getPosts: 게시글 목록을 불러오는 함수</span>
+<span class="c1">// getComments: 댓글 목록을 불러오는 함수</span>
+<span class="nx">getUsers</span><span class="p">(</span><span class="nx">users</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">getPosts</span><span class="p">(</span><span class="nx">posts</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">getComments</span><span class="p">(</span><span class="nx">comments</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">users</span><span class="p">,</span> <span class="nx">posts</span><span class="p">,</span> <span class="nx">comments</span><span class="p">)</span>
+    <span class="p">})</span>
+  <span class="p">})</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>위와 같이 비동기 작업이 연속적으로 여러 개라면 콜백 안의 콜백으로 이루어져 조금 더 복잡해 보입니다. 또 다른 경우를 봅시다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// getUsers: 사용자 목록을 불러오는 함수</span>
+<span class="c1">// getPosts: 게시글 목록을 불러오는 함수</span>
+<span class="c1">// getComments: 댓글 목록을 불러오는 함수</span>
+<span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="kd">function</span> <span class="nx">doSomething</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">users</span><span class="p">,</span> <span class="nx">posts</span><span class="p">,</span> <span class="nx">comments</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">data</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">users</span> <span class="o">||</span> <span class="o">!</span><span class="nx">posts</span> <span class="o">||</span> <span class="o">!</span><span class="nx">comments</span><span class="p">)</span> <span class="k">return</span>
+  <span class="c1">// do something with users, posts, comments...</span>
+<span class="p">}</span>
+
+<span class="nx">getUsers</span><span class="p">(</span><span class="nx">users</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">data</span><span class="p">.</span><span class="nx">users</span> <span class="o">=</span> <span class="nx">users</span>
+  <span class="nx">doSomething</span><span class="p">()</span>
+<span class="p">})</span>
+<span class="nx">getPosts</span><span class="p">(</span><span class="nx">posts</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">data</span><span class="p">.</span><span class="nx">posts</span> <span class="o">=</span> <span class="nx">posts</span>
+  <span class="nx">doSomething</span><span class="p">()</span>
+<span class="p">})</span>
+<span class="nx">getComments</span><span class="p">(</span><span class="nx">comments</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">data</span><span class="p">.</span><span class="nx">comments</span> <span class="o">=</span> <span class="nx">comments</span>
+  <span class="nx">doSomething</span><span class="p">()</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>이번에는 세가지의 비동기 작업이 병렬적으로 진행됩니다. 하지만 세가지 데이터를 한번에 다룰 작업이 필요하다면 코드가 복잡해지고, 가독성도 떨어지게 됩니다.</p>
+
+<h2 id="2-그럼-promise-어떻게-사용할까요">2. 그럼… Promise 어떻게 사용할까요?</h2>
+
+<p>이제 본격적으로 <strong>Promise</strong>에 대해 알아보겠습니다. <strong>Promise</strong>는 콜백 방식에 비해 비동기 작업을 조금 더 유연하게 다룰 수 있습니다.</p>
+
+<blockquote>
+  <p>Promise 개체는 비동기 작업이 맞이할 미래의 완료 또는 실패와 그 결과 값을 나타냅니다.
+<a href="https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Promise"><em>(출처: MDN)</em></a></p>
+</blockquote>
+
+<p><strong>Promise</strong>는 비동기 작업을 하나의 객체로 다루는 개념입니다. 단순히 <strong>Callback</strong>보다 깔끔한 코드를 위해서가 아니라 작업 자체를 값으로 생각하는 것입니다.</p>
+
+<h3 id="21-promise-객체-생성하기">2.1 Promise 객체 생성하기</h3>
+
+<p>그럼 <strong>Promise</strong>가 어떻게 사용되어지고, 동작하는지 한번 알아봅시다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// ... do something with async process</span>
+  <span class="nx">resolve</span><span class="p">(</span><span class="dl">'</span><span class="s1">완료!</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">})</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">promise</span><span class="p">)</span> <span class="c1">// output: Promise {&lt;resolved&gt;: "완료!"}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">Promise</code>는 <code class="highlighter-rouge">new Promise()</code>를 통해 객체를 생성합니다. 생성자의 인자로 넘겨준 <code class="highlighter-rouge">executor(callback)</code>함수에서 <code class="highlighter-rouge">resolve</code>를 호출하여 작업을 처리합니다. 그렇게 출력되어진 결과는 <code class="highlighter-rouge">완료!</code>라는 값을 가진 <code class="highlighter-rouge">Promise</code> 객체입니다.</p>
+
+<h3 id="22-promise의-상태">2.2 Promise의 상태</h3>
+
+<ul>
+  <li>대기(pending): 이행하거나 거부되지 않은 초기 상태</li>
+  <li>이행(fulfilled): 연산이 성공적으로 완료됨</li>
+  <li>거부(rejected): 연산이 실패함</li>
+</ul>
+
+<p><strong>Promise</strong>는 위와 같은 세가지 중 하나의 상태를 가집니다. 위의 코드에서 <code class="highlighter-rouge">new Promise()</code>에 전달한 함수에서 첫번째 인자인 <code class="highlighter-rouge">resolve</code>를 호출하면 <strong>이행(fulfilled)</strong> 상태가 됩니다. 만약 두번째 인자인 <code class="highlighter-rouge">reject</code>를 호출하면 <strong>거부(rejected)</strong> 상태가 됩니다. 그리고 주석 처리된 부분에서 비동기 작업이 아직 진행 중이면 아직 <code class="highlighter-rouge">resolve</code>나 <code class="highlighter-rouge">reject</code>를 호출하지 않았기 때문에 <strong>대기(pending)</strong> 상태가 됩니다.<br />
+<em>(<strong>대기</strong> 중이지 않으며 <strong>이행</strong> 또는 <strong>거부</strong> 상태가 된 것을 <strong>처리(settled)</strong> 라고 부르기도 합니다.)</em></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">pending</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">resolve</span><span class="p">(</span><span class="dl">'</span><span class="s1">대기!</span><span class="dl">'</span><span class="p">),</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="p">})</span>
+<span class="kd">const</span> <span class="nx">fulfilled</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">resolve</span><span class="p">(</span><span class="dl">'</span><span class="s1">완료!</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">})</span>
+<span class="kd">const</span> <span class="nx">rejected</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">reject</span><span class="p">(</span><span class="dl">'</span><span class="s1">거부!</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">})</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">pending</span><span class="p">)</span> <span class="c1">// output: Promise {&lt;pending&gt;}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">fulfilled</span><span class="p">)</span> <span class="c1">// output: Promise {&lt;resolved&gt;: "완료!"}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">rejected</span><span class="p">)</span> <span class="c1">// output: Promise {&lt;rejected&gt;: "거부!"}</span>
+<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">pending</span><span class="p">),</span> <span class="mi">1000</span><span class="p">)</span> <span class="c1">// output: Promise {&lt;resolved&gt;: "대기!"}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">Promise</code> 객체를 콘솔에 출력해보면 각각의 상태와 값을 볼 수 있습니다. <code class="highlighter-rouge">pending</code>의 경우에는 처음에는 <code class="highlighter-rouge">대기</code>상태였지만, 1초 후에 출력하면 <code class="highlighter-rouge">이행</code>상태가 되어 있는 것을 확인할 수 있습니다.</p>
+
+<p>이렇게 <code class="highlighter-rouge">Promise</code> 객체를 통해 비동기 작업을 코드의 순서와 관계없이 객체에 담아서 다룰 수 있습니다. 하지만 <code class="highlighter-rouge">Promise</code> 객체 자체를 데이터로 사용할 순 없으니, <code class="highlighter-rouge">이행</code> 또는 <code class="highlighter-rouge">거부</code>된 <code class="highlighter-rouge">Promise</code> 객체에서 값을 꺼내 다루는 법을 알아보겠습니다.</p>
+
+<h3 id="23-promise-사용하기">2.3 Promise 사용하기</h3>
+
+<p><code class="highlighter-rouge">Promise</code>객체는 다음과 같은 메소드를 가집니다. 메소드를 호출하여 <code class="highlighter-rouge">Promise</code>객체에 담긴 값을 다룰 수 있습니다.</p>
+
+<ul>
+  <li>then: Promise에 이행 또는 거부에 대한 처리기(callback)를 추가합니다.</li>
+  <li>catch: Promise에 거부에 대한 처리기(callback)를 추가합니다.</li>
+  <li>finally: Promise가 처리(settled)되면 무조건 실행되는 처리기(callback)를 추가합니다.</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">res</span><span class="p">,</span> <span class="nx">rej</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// 무언가 비동기 작업...</span>
+  <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span> <span class="na">users</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">Jason</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Conan</span><span class="dl">'</span><span class="p">]</span> <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">res</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">rej</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">data가 없어요</span><span class="dl">'</span><span class="p">))</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="nx">promise</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">users</span><span class="p">)</span> <span class="c1">// output: ['Jason', 'Conan']</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">err</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+  <span class="p">})</span>
+</code></pre></div></div>
+
+<p>위의 3가지 메소드는 모두 <code class="highlighter-rouge">Promise</code>객체를 반환합니다. <code class="highlighter-rouge">then</code>과 <code class="highlighter-rouge">catch</code>는 콜백함수의 반환값이 담긴 <code class="highlighter-rouge">이행(fulfilled)</code>된 <code class="highlighter-rouge">Promise</code>가 반환됩니다. <code class="highlighter-rouge">finally</code>는 콜백 함수에서 에러가 발생하면 <code class="highlighter-rouge">거부</code>된 <code class="highlighter-rouge">Promise</code>가 반환되고, 그렇지 않으면 <code class="highlighter-rouge">finally</code>가 호출된 <code class="highlighter-rouge">Promise</code>가 반환됩니다.</p>
+
+<p><code class="highlighter-rouge">Promise</code>의 메소드는 값의 변경이 있든 아니든 다시 <code class="highlighter-rouge">Promise</code>를 반환하기 때문에 메소드 체이닝(Chaining)이 가능합니다. 이미 위의 <code class="highlighter-rouge">then</code>과 <code class="highlighter-rouge">catch</code>를 이어서 호출한 것도 그때문에 가능합니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">res</span><span class="p">,</span> <span class="nx">rej</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// 무언가 비동기 작업...</span>
+  <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span> <span class="na">users</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">Jason</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Conan</span><span class="dl">'</span><span class="p">]</span> <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">res</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">rej</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">data가 없어요</span><span class="dl">'</span><span class="p">))</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="nx">promise</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="c1">// 무언가...</span>
+      <span class="nx">res</span><span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">users</span><span class="p">)</span>
+    <span class="p">})</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">users</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="c1">// 비동기...</span>
+      <span class="nx">res</span><span class="p">(</span><span class="nx">users</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">user</span> <span class="o">=&gt;</span> <span class="nx">user</span><span class="p">.</span><span class="nx">length</span><span class="p">))</span>
+    <span class="p">})</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">counts</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// 작업...</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">counts</span><span class="p">)</span> <span class="c1">// output: [5, 5]</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">err</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+  <span class="p">})</span>
+</code></pre></div></div>
+
+<p>이렇게 <code class="highlighter-rouge">Promise</code>의 체이닝을 이용해서 연속적인 비동기 작업을 처리할 수 있습니다. 위의 코드에서는 <code class="highlighter-rouge">new Promise()</code>를 선언하여 객체를 생성했지만, 비동기 작업에 대한 코드를 미리 <code class="highlighter-rouge">Promise</code>객체를 반환하는 라이브러리를 사용하거나 함수를 선언해두면 더 보기 좋게 코드를 작성할 수 있습니다.</p>
+
+<h3 id="24-promise-메소드-더-알아보기">2.4 Promise 메소드 더 알아보기</h3>
+
+<p><code class="highlighter-rouge">Promise</code>에는 자체 메소드가 몇가지 있습니다.</p>
+
+<ul>
+  <li>Promise.all()</li>
+  <li>Promise.race()</li>
+  <li>Promise.resolve()</li>
+  <li>Promise.reject()</li>
+</ul>
+
+<h4 id="241-promiseall">2.4.1 Promise.all</h4>
+
+<p><code class="highlighter-rouge">Promise.all()</code> 메소드는 여러 개의 <code class="highlighter-rouge">Promise</code>객체의 처리 여부에 대한 작업을 수행합니다. 또한 인자로 받는 <code class="highlighter-rouge">iterable</code>의 모든 처리 결과가 <code class="highlighter-rouge">이행(fulfilled)</code>이면 <code class="highlighter-rouge">Promise.all()</code>은 <code class="highlighter-rouge">이행</code>된 <code class="highlighter-rouge">Promise</code>객체를 반환합니다. 만약 하나의 <code class="highlighter-rouge">Promise</code> 객체라도 <code class="highlighter-rouge">거부(rejected)</code>되면 <code class="highlighter-rouge">Promise.all()</code>은 즉시 <code class="highlighter-rouge">거부</code>된 <code class="highlighter-rouge">Promise</code>를 반환합니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise1</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="kd">const</span> <span class="nx">promise2</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="kd">const</span> <span class="nx">promise3</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">r</span><span class="p">,</span> <span class="nx">j</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">j</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="nx">promise1</span><span class="p">,</span> <span class="nx">promise2</span><span class="p">,</span> <span class="nx">promise3</span><span class="p">])</span>
+<span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="c1">// output: [1, 2, 3]</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>위의 코드에서는 간단히 작성 하였지만, 여러개의 비동기 작업을 처리해야 할 때 잘 활용하면 좋습니다. <code class="highlighter-rouge">이행</code>된 값을 확인해 보면 <code class="highlighter-rouge">Promise.all()</code>의 매개변수로 넘겨준 <code class="highlighter-rouge">iterable</code>의 각각의 <code class="highlighter-rouge">이행</code>된 값을 가지고 있습니다.</p>
+
+<h4 id="242-promiserace">2.4.2 Promise.race()</h4>
+
+<p><code class="highlighter-rouge">Promise.race()</code> 메소드는 여러 개의 <code class="highlighter-rouge">Promise</code>객체를 매개변수로 받아 가장 먼저 <code class="highlighter-rouge">처리(settled)</code>된 <code class="highlighter-rouge">Promise</code> 객체를 반환합니.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise1</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">1000</span><span class="p">))</span>
+<span class="kd">const</span> <span class="nx">promise2</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">500</span><span class="p">))</span>
+<span class="kd">const</span> <span class="nx">promise3</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">res</span><span class="p">,</span> <span class="nx">rej</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">rej</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">race</span><span class="p">([</span><span class="nx">promise1</span><span class="p">,</span> <span class="nx">promise2</span><span class="p">,</span> <span class="nx">promise3</span><span class="p">])</span>
+<span class="nx">promise</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="c1">// "이행되지 않음"</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">err</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">error:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span> <span class="c1">// output: error: 3</span>
+  <span class="p">})</span>
+</code></pre></div></div>
+
+<h4 id="243-promiseresolve--promisereject">2.4.3 Promise.resolve() / Promise.reject()</h4>
+
+<p><code class="highlighter-rouge">Promise.resolve()</code>메소드는 파라미터로 넘겨준 값을 가진 <code class="highlighter-rouge">이행</code>된 <code class="highlighter-rouge">Promise</code> 객체를 즉시 반환합니다. 만약 어떤 값을 처리할 때, <code class="highlighter-rouge">Promise</code>인지 아닌지 확실하지 않은데 <code class="highlighter-rouge">Promise</code>로 처리하고자 하면 <code class="highlighter-rouge">Promise.resolve(value)</code>를 이행한 후 반환된 <code class="highlighter-rouge">Promise</code>에 대해 값을 처리하면 됩니다.</p>
+
+<p><code class="highlighter-rouge">Promise.reject()</code>메소드는 파라미터로 넘겨준 이유로 <code class="highlighter-rouge">거부</code>된 <code class="highlighter-rouge">Promise</code> 객체를 반환합니다.</p>
+
+<h2 id="마무리">마무리</h2>
+
+<p>이렇게 <strong>Promise</strong>를 다루는 방법을 알아 보았습니다. 어떻게 사용되어지고 어떠한 메소드들이 있는지 알아보았는데, 사실 이번 글을 통해 비동기를 다루는 <strong>Promise</strong>의 특징과 장점에 대해서는 많이 알지 못해서 조금 아쉽습니다. 단순히 사용법을 넘어서 <strong>Promise</strong>를 이용해 비동기를 더 유연하고, 쉽게 다루는 스킬을 익혀야겠습니다.</p>
+
+        <div class="post-bottom-margin"></div>
+         
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#javascript"
+  title=""
+>
+  <span class="label">
+      javascript
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#promise"
+  title=""
+>
+  <span class="label">
+      promise
+  </span>
+  
+</span>
+ 
+        <div></div>
+         <div style="height: 30px;"></div>
+<div id="disqus_thread"></div>
+<script>
+  /**
+   *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+   *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+  (function () {
+    // DON'T EDIT BELOW THIS LINE
+    var d = document,
+      s = d.createElement("script");
+    s.src = "https://itsdone.disqus.com/embed.js";
+    s.setAttribute("data-timestamp", +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+ 
+
+        <div class="post-bottom-margin"></div>
+
+        <!-- <div class="clearfix">
+          
+          <a
+            class="btn btn-primary float-left"
+            href="/posts/5"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Svelte로 만드는 TODO-App (3)"
+            >&larr; Previous<span class="d-none d-md-inline"> Post</span></a
+          >
+           
+          <a
+            class="btn btn-primary float-right"
+            href="/posts/7"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Javascript의 비동기 처리, async/await를 알아보자"
+            >Next<span class="d-none d-md-inline"> Post</span> &rarr;</a
+          >
+          
+        </div> -->
+      </div>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:kadr8941@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/hoontae24">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; hoontae 2020</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/vendor/startbootstrap-clean-blog/js/clean-blog.min.js"></script>
+
+<script src="/assets/scripts.js"></script>
+<script src="/assets/js/post.js"></script>
+<script src="/assets/js/global.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151335869-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151335869-1');
+</script>
+
+
+  <div class="scrollToTopButton" onclick="_toTop()">
+  <i class="fas fa-arrow-up"></i>
+</div>
+
+<script>
+  const _toTop = () => {
+    const isHigh = window.scrollY > 2000
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: isHigh ? 'auto' : 'smooth',
+    })
+  }
+  onMount(() => {
+    const btn = document.querySelector('div.scrollToTopButton')
+    const showBtn = () => {
+      window.scrollY > 100
+        ? !btn.classList.contains('show') && btn.classList.add('show')
+        : btn.classList.contains('show') && btn.classList.remove('show')
+    }
+    showBtn()
+    window.addEventListener('scroll', showBtn)
+  })
+</script>
+
+<style>
+  .scrollToTopButton {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    right: 40px;
+    bottom: 40px;
+
+    cursor: pointer;
+    border: 1px solid #000000a2;
+    color: #000000a2;
+    background-color: #ffffff99;
+    border-radius: 50%;
+    overflow: hidden;
+    visibility: hidden;
+  }
+  .scrollToTopButton.show {
+    visibility: visible;
+  }
+  @media only screen and (max-width: 767px) {
+    .scrollToTopButton {
+      width: 30px;
+      height: 30px;
+      right: 20px;
+      bottom: 20px;
+    }
+  }
+</style>
+
+</body>
+</html>

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Javascript의 비동기 처리, async/await를 알아보자 | 코드블로그_
+    
+  </title>
+  <meta name="description" content="안녕하세요. 오늘은 자바스크립트의 비동기 처리를 다루는 async/await 문법에 대해 알아보겠습니다. 지난 글에서 다루었던 Promise와 함께 자바스크립트의 비동기 패턴 중 하나입니다. 또한 async/await 패턴은 Promise를 기반으로 하고 있습니다. 혹시 아직 Pr...">
+  <!-- Begin Jekyll SEO tag v2.6.1 -->
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Javascript의 비동기 처리, async/await를 알아보자" />
+<meta name="author" content="Hoontae" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="안녕하세요. 오늘은 자바스크립트의 비동기 처리를 다루는 async/await 문법에 대해 알아보겠습니다. 지난 글에서 다루었던 Promise와 함께 자바스크립트의 비동기 패턴 중 하나입니다. 또한 async/await 패턴은 Promise를 기반으로 하고 있습니다. 혹시 아직 Promise에 대해 모르신다면 이 글들을 추천드립니다." />
+<meta property="og:description" content="안녕하세요. 오늘은 자바스크립트의 비동기 처리를 다루는 async/await 문법에 대해 알아보겠습니다. 지난 글에서 다루었던 Promise와 함께 자바스크립트의 비동기 패턴 중 하나입니다. 또한 async/await 패턴은 Promise를 기반으로 하고 있습니다. 혹시 아직 Promise에 대해 모르신다면 이 글들을 추천드립니다." />
+<link rel="canonical" href="https://hoontae24.github.io/posts/7" />
+<meta property="og:url" content="https://hoontae24.github.io/posts/7" />
+<meta property="og:site_name" content="코드블로그_" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-01-11T00:00:00+09:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hoontae24.github.io/posts/7"},"datePublished":"2020-01-11T00:00:00+09:00","url":"https://hoontae24.github.io/posts/7","author":{"@type":"Person","name":"Hoontae"},"headline":"Javascript의 비동기 처리, async/await를 알아보자","dateModified":"2020-01-11T00:00:00+09:00","description":"안녕하세요. 오늘은 자바스크립트의 비동기 처리를 다루는 async/await 문법에 대해 알아보겠습니다. 지난 글에서 다루었던 Promise와 함께 자바스크립트의 비동기 패턴 중 하나입니다. 또한 async/await 패턴은 Promise를 기반으로 하고 있습니다. 혹시 아직 Promise에 대해 모르신다면 이 글들을 추천드립니다.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+  <link rel='stylesheet' href='//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.css'>
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/assets/vendor/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+
+  <link href="/img/ico/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon"/>
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://hoontae24.github.io/posts/7">
+  <link rel="alternate" type="application/rss+xml" title="코드블로그_" href="/feed.xml">
+
+</head>
+
+<script>
+  const listeners = []
+  const onMount = listener => listeners.push(listener)
+  window.addEventListener('load', () => {
+    listeners.forEach(listener => listener && listener())
+  })
+</script>
+
+<body>
+  <!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="position: fixed;" id="mainNav">
+  <div class="navbar-wrapper">
+    <a class="navbar-brand" href="/" >
+      코드블로그_
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav ml-auto">
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="/">HOME</a>
+      </li> -->
+      <li class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </li>
+      <!-- <li class="nav-item">
+          <a class="nav-link" href="/tags">TAGS</a>
+      </li> -->
+      <li class="nav-item">
+          <a class="nav-link" href="/archives">ARCHIVES</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="/about">ABOUT</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+  <!-- Page Header -->
+
+<header
+  class="masthead"
+  style="background-image: url('/img/posts/promise/async_await.png')"
+>
+  
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-heading">
+            <h1>Javascript의 비동기 처리, async/await를 알아보자</h1>
+            
+            <span class="meta">
+              <!-- >Posted by
+              <a href="/about"
+                >Hoontae</a
+              >
+              on  -->
+              2020.01.11 &middot; <span class="reading-time" title="Estimated read time">
+  
+   16 mins  read </span>
+
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container post">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto wrapper">
+        
+
+<script>
+  const btnFolded = document.querySelector('.btn.folded')
+  const btnUnfolded = document.querySelector('.btn.unfolded')
+  btnFolded && btnFolded.classList.add('hidden')
+  btnUnfolded && btnUnfolded.classList.remove('hidden')  
+
+  function toggleFold () {
+    const btnFolded = document.querySelector('.btn.folded')
+    const btnUnfolded = document.querySelector('.btn.unfolded')
+    const titleWrapper = document.querySelector('.title-wrapper')
+    const itemWrapper = document.querySelector('.item-wrapper')
+    btnFolded.classList.toggle('hidden')
+    btnUnfolded.classList.toggle('hidden')
+    titleWrapper.classList.toggle('folded')
+    itemWrapper.classList.toggle('folded')
+  }
+</script>
+ <p>안녕하세요. 오늘은 자바스크립트의 비동기 처리를 다루는 async/await 문법에 대해 알아보겠습니다. 지난 글에서 다루었던 <a href="6">Promise</a>와 함께 자바스크립트의 비동기 패턴 중 하나입니다. 또한 async/await 패턴은 <strong>Promise</strong>를 기반으로 하고 있습니다. 혹시 아직 <strong>Promise</strong>에 대해 모르신다면 이 글들을 추천드립니다.</p>
+
+<blockquote>
+  <p><a href="https://joshua1988.github.io/web-development/javascript/promise-for-beginners/">자바스크립트 Promise 쉽게 이해하기 • Captain Pangyo</a><br />
+<a href="https://developer.mozilla.org/ko-KR/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise - MDN - Mozilla</a></p>
+</blockquote>
+
+<hr />
+
+<h2 id="1-asyncawait-문법-살펴보기">1. async/await 문법 살펴보기</h2>
+
+<p><strong>async/await</strong>는 ECMAScript 2017부터 추가된 문법입니다. <strong>Promise</strong>를 살펴볼 때, 하나의 객체로 취급했었습니다. 그래서 <strong>Promise</strong>가 자바스크립트 표준으로 정의되기 전에도 커스텀으로 구현되어 사용되어지고 있었습니다. 하지만 <strong>async/await</strong>는 하나의 문법이기 때문에 라이브러리나 모듈이 아닌 자바스크립트 새로운 키워드를 사용합니다.</p>
+
+<p><strong>async/await</strong>는 새로운 문법이기 때문에 최신 버전의 자바스크립트를 지원하지 않는 런타임에서는 구동할 수 없습니다. 오늘의 예제 코드는 Chrome 브라우저에서 실행되는 코드이며, Chrome에서는 <strong>async/await</strong>문법을 지원합니다.</p>
+
+<p> </p>
+
+<h3 id="1-1-async-function비동기-함수-정의하기">1-1. async function(비동기 함수) 정의하기</h3>
+
+<blockquote>
+  <p>async function 선언은 AsyncFunction객체를 반환하는 하나의 비동기 함수를 정의합니다. <a href="https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Statements/async_function"><em>(출처: MDN)</em></a></p>
+</blockquote>
+
+<p><code class="highlighter-rouge">async</code> 키워드를 이용하여 함수를 선언하면 <code class="highlighter-rouge">AsyncFunction</code>객체를 만들 수 있습니다. 코드를 함께 보겠습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">myFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="dl">'</span><span class="s1">Hello Function</span><span class="dl">'</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myFunc</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="dl">'</span><span class="s1">Hello Async Function</span><span class="dl">'</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myAsyncFunc</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>기존 <code class="highlighter-rouge">function</code>키워드로 선언한 함수와 <code class="highlighter-rouge">async function</code>키워드로 선언한 함수를 비교해 보겠습니다. 출력 로그를 확인해 보세요.</p>
+
+<p><img src="/img/posts/promise/async_screenshot_1.png" alt="async function" /></p>
+
+<p><code class="highlighter-rouge">async function</code>키워드로 선언한 함수는 <code class="highlighter-rouge">async f</code>로 표시되는 것을 볼 수 있습니다. 화살표 함수로도 선언할 수 있습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="dl">'</span><span class="s1">Hello Async function</span><span class="dl">'</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myAsyncFunc</span><span class="p">)</span>
+
+<span class="kd">const</span> <span class="nx">myAsyncArrow</span> <span class="o">=</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="dl">'</span><span class="s1">Hello Async Arrow</span><span class="dl">'</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myAsyncArrow</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><img src="/img/posts/promise/async_screenshot_2.png" alt="async function" /></p>
+
+<p> </p>
+
+<h3 id="1-2-await-키워드와-함께-사용하기">1-2. await 키워드와 함께 사용하기</h3>
+
+<blockquote>
+  <p>await 연산자는 async function 내부에서만 사용할 수 있습니다. <a href="https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Operators/await"><em>(출처: MDN)</em></a></p>
+</blockquote>
+
+<p><code class="highlighter-rouge">await</code>키워드는 <code class="highlighter-rouge">async function</code>내부에서만 사용되어집니다. 만약 <code class="highlighter-rouge">async function</code>밖에서 사용한다면 문법이 틀렸다고 판단해 <code class="highlighter-rouge">SyntaxError</code>를 발생합니다.</p>
+
+<p><code class="highlighter-rouge">await</code>키워드는 <code class="highlighter-rouge">promise</code>를 기다리기 위해 사용됩니다. 즉, <code class="highlighter-rouge">async function</code> 내부에서 <code class="highlighter-rouge">promise</code>의 비동기 작업을 기다리기 위해 <code class="highlighter-rouge">await</code>키워드를 사용합니다. 코드를 보겠습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 브라우저에 내장된 fetch함수를 이용해 비동기 작업을 수행합니다.</span>
+<span class="c1">// fetch함수는 URL로부터 데이터를 가져와서 promise를 반환합니다.</span>
+<span class="c1">// fetch('https://jsonplaceholder.typicode.com/posts/1')</span>
+
+<span class="kd">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">https://jsonplaceholder.typicode.com/posts/1</span><span class="dl">'</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">await</span><span class="dl">'</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">myAsyncFunc</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="/img/posts/promise/await_screenshot_1.png" alt="await" /></p>
+
+<p>콘솔에서 실행해 보면 <code class="highlighter-rouge">Response</code>객체가 출력되는 것을 볼 수 있습니다. <code class="highlighter-rouge">fetch API</code>를 통해 불러온 데이터가 출력되는 것입니다. <code class="highlighter-rouge">fetch</code>함수에서 비동기 작업이 이루어지고, <code class="highlighter-rouge">await</code>키워드가 붙었기 때문에 <code class="highlighter-rouge">async function</code>내에서 해당 작업을 기다립니다.</p>
+
+<p>만약 위와 같은 작업을 <code class="highlighter-rouge">promise</code>패턴으로 코드를 작성하면 다음과 같을 것입니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">https://jsonplaceholder.typicode.com/posts/1</span><span class="dl">'</span>
+<span class="kd">function</span> <span class="nx">myFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>아직 코드의 양이나 로직이 이해되는 것에 크게 차이가 있지 않아 보입니다. 하지만 비동기 작업이 많아지거나 함수의 코드가 길어지면 <code class="highlighter-rouge">await</code>키워드를 이용하여 조금 더 가독성이 좋은 직관적인 코드를 작성할 수 있습니다.
+<em>(Promise와 async/await는 비동기 작업을 다루는 패턴 중 하나입니다. 개인 취향에 따라 다르게 평가될 수 있습니다.)</em></p>
+
+<p>비동기 작업이 여러 번 반복된다면 더 진가를 발휘한다고 생각합니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">userDataUrl</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">https://jsonplaceholder.typicode.com/users/1</span><span class="dl">'</span>
+<span class="kd">const</span> <span class="nx">postDataUrl</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">https://jsonplaceholder.typicode.com/posts/1</span><span class="dl">'</span>
+
+<span class="c1">// promise 패턴</span>
+<span class="kd">function</span> <span class="nx">myFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">fetch</span><span class="p">(</span><span class="nx">userDataUrl</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">user</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span>
+    <span class="p">})</span>
+  <span class="nx">fetch</span><span class="p">(</span><span class="nx">postDataUrl</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">post</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">post</span><span class="p">)</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+<span class="nx">myFunc</span><span class="p">()</span>
+
+<span class="c1">// async/await 패턴</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">userDataUrl</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+  <span class="kd">const</span> <span class="nx">post</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">postDataUrl</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">post</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">myAsyncFunc</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>위 코드에서 <code class="highlighter-rouge">console.log</code>부분의 작업이 단순히 출력이 아니라고 생각해보세요. <code class="highlighter-rouge">user</code>데이터와 <code class="highlighter-rouge">post</code>데이터를 함께 다루어야 한다면 <code class="highlighter-rouge">promise</code>패턴보다 <code class="highlighter-rouge">async/await</code>패턴으로 더 직관적인 코드를 작성할 수 있을 것입니다.</p>
+
+<hr />
+
+<p> </p>
+
+<h2 id="2-asyncawait-이해--응용하기">2. async/await 이해 &amp; 응용하기</h2>
+
+<p>새로운 문법이라 하더라도 자바스크립트의 비동기 처리의 코어 내부적인 동작이 크게 달라진 것은 아닙니다. 그럼 어떻게 async/await이 동작하는지 이해하고 비동기 작업을 다양한 상황에서 잘 다룰 수 있게 살펴봅시다.</p>
+
+<p> </p>
+
+<h3 id="2-1-async-function-이해하기">2-1. async function 이해하기</h3>
+
+<p><code class="highlighter-rouge">await</code>키워드가 <code class="highlighter-rouge">promise</code>를 기다리는 동작이 마치 프로그램이 정지된 것처럼 느껴질 수 있습니다. 하지만 <code class="highlighter-rouge">promise.then</code>함수처럼 다음 동작이 완료되는 것을 기다리는 것뿐입니다. <code class="highlighter-rouge">await</code>키워드가 <code class="highlighter-rouge">async function</code> 내부에서만 사용할 수 있다는 것을 기억하세요. <code class="highlighter-rouge">await</code>키워드가 <code class="highlighter-rouge">promise</code>를 기다릴 수 있는 이유는 <code class="highlighter-rouge">async function</code>이 이미 <code class="highlighter-rouge">promise</code>를 반환하기 때문입니다. 코드를 통해서 동작을 이해해 봅시다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">await</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">res</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="dl">'</span><span class="s1">hello</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">})</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span>
+  <span class="k">return</span> <span class="nx">result</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myAsyncFunc</span><span class="p">())</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Finish</span><span class="dl">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>위 코드의 순서를 한번 보세요. <code class="highlighter-rouge">async function</code>인 <code class="highlighter-rouge">myAsyncFunc</code>을 호출하면서 동시에 반환값을 출력해보면 <code class="highlighter-rouge">Promise {&lt;pending&gt;}</code>이 출력됩니다. 그 후에 <code class="highlighter-rouge">Finish</code>가 출력되고, 1초 후에 <code class="highlighter-rouge">hello</code>가 출력됩니다.</p>
+
+<p>출력순서:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">Promise {&lt;pending&gt;}</code></li>
+  <li><code class="highlighter-rouge">Finish</code></li>
+  <li><code class="highlighter-rouge">Hello</code></li>
+</ul>
+
+<p><code class="highlighter-rouge">async function</code>이 호출되면 즉시 <code class="highlighter-rouge">promise</code>가 반환됩니다. 위 코드에서 <code class="highlighter-rouge">myAsyncFunc()</code>로 함수를 호출하고 나면 메인 콜스택에서는 <code class="highlighter-rouge">promise</code>를 반환받고, 내부의 동작에는 신경쓰지 않습니다. <code class="highlighter-rouge">async function</code> 내부의 <code class="highlighter-rouge">await</code>의 기다림 동작에서도 메인 프로세스는 멈추지 않고 동작할 수 있습니다.</p>
+
+<p>또한 <code class="highlighter-rouge">async function</code>에서 <code class="highlighter-rouge">return</code>되는 값을 그 <code class="highlighter-rouge">promise</code>의 <code class="highlighter-rouge">resolved</code>로 전달됩니다. 그렇기 때문에 <code class="highlighter-rouge">return</code> 구문에서는 <code class="highlighter-rouge">await</code> 키워드를 사용할 필요가 없습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="dl">'</span><span class="s1">Done</span><span class="dl">'</span>
+<span class="p">}</span>
+<span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">myAsyncFunc</span><span class="p">()</span>
+<span class="nx">result</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">)</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p> </p>
+
+<h3 id="2-2-await-이해하기">2-2. await 이해하기</h3>
+
+<p><code class="highlighter-rouge">await</code>키워드가 사용되는 문법은 이러한 형태입니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nx">someAsyncFunc</span><span class="p">()</span>
+  <span class="c1">// or</span>
+  <span class="k">await</span> <span class="nx">somePromise</span>
+  <span class="c1">// or</span>
+  <span class="k">await</span> <span class="nx">someValue</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">await</code>는 <code class="highlighter-rouge">promise</code>를 기다린 후에 반환하지만, 꼭 <code class="highlighter-rouge">promise</code>가 아닌 <code class="highlighter-rouge">어떤 값</code>일 수도 있습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getPromise</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">res</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="dl">'</span><span class="s1">promise</span><span class="dl">'</span><span class="p">))</span>
+<span class="p">}</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">someCondition</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+  <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">await</span> <span class="p">(</span><span class="nx">someCondition</span> <span class="p">?</span> <span class="nx">getPromise</span><span class="p">()</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">Done</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">myAsyncFunc</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>위 코드를 여러 번 실행해 보면, 실행할 때 마다 다른 결과를 얻을 수 있습니다. <code class="highlighter-rouge">someCondition</code>에 따라 <code class="highlighter-rouge">await</code>키워드는 <code class="highlighter-rouge">promise</code>를 받을 수도, <code class="highlighter-rouge">Done</code>이라는 값을 받을 수도 있습니다. 만약 <code class="highlighter-rouge">promise</code>라면 해당 동작을 기다린 후에 값을 <code class="highlighter-rouge">result</code>에 전달합니다.</p>
+
+<p>이러한 특징을 이용해서 어떠한 값에 대해 <code class="highlighter-rouge">promise</code>이든 <code class="highlighter-rouge">어떤 값</code>이든 유연하게 처리할 수 있습니다.</p>
+
+<h3 id="2-3-asyncawait와-promise-응용하기">2-3. async/await와 promise 응용하기</h3>
+
+<p><code class="highlighter-rouge">async function</code>내에서 <code class="highlighter-rouge">await</code>를 이용하여 원하는 시점에 결과값을 다룰 수 있습니다. 다음 코드를 봅시다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">delay</span><span class="p">(</span><span class="nx">time</span><span class="p">,</span> <span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+      <span class="nx">res</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+    <span class="p">},</span> <span class="nx">time</span><span class="p">),</span>
+  <span class="p">)</span>
+<span class="p">}</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">result1</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Hello</span><span class="dl">'</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">result2</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Async</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">myAsyncFunc</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">dealy</code>함수는 입력된 시간후에 <code class="highlighter-rouge">msg</code>를 출력하는 함수입니다. 비동기 작업인 <code class="highlighter-rouge">delay</code>함수를 호출할 때마다 <code class="highlighter-rouge">await</code>를 붙여주었습니다. 위 코드의 실행 순서는 먼저 1초를 기다린 후 <code class="highlighter-rouge">Hello</code>가 출력되고, 2초후에 <code class="highlighter-rouge">Async</code>가 출력됩니다. 두번째 <code class="highlighter-rouge">delay</code>함수가 호출되기 위해서 앞선 <code class="highlighter-rouge">delay</code>함수가 끝날 때까지 <code class="highlighter-rouge">await</code>로 인해 기다리게 됩니다. 동작이 완료되기 위해서는 총 3초의 시간이 소요됩니다.</p>
+
+<p>만약 두 개의 비동기 작업이 서로 관련이 없이 독립적으로 동작해도 괜찮다면 이렇게 코드를 수정할 수 있을 것입니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">delay</span><span class="p">(</span><span class="nx">time</span><span class="p">,</span> <span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+      <span class="nx">res</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+    <span class="p">},</span> <span class="nx">time</span><span class="p">),</span>
+  <span class="p">)</span>
+<span class="p">}</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">_result1</span> <span class="o">=</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Hello</span><span class="dl">'</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">_result2</span> <span class="o">=</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Async</span><span class="dl">'</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">result1</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">_result1</span>
+  <span class="kd">const</span> <span class="nx">result2</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">_result2</span>
+<span class="p">}</span>
+<span class="nx">myAsyncFunc</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>이전의 순서와 다른 점을 찾으셨나요? <code class="highlighter-rouge">delay</code>함수를 호출하는 순서는 같지만, 두번째 <code class="highlighter-rouge">delay</code>함수가 호출되기 위해서 첫번째 <code class="highlighter-rouge">delay</code>함수를 기다리지 않습니다. 그렇기 때문에 두 개의 <code class="highlighter-rouge">delay</code>함수가 지연없이 연속적으로 호출됩니다. 출력 시간도 1초 후에 <code class="highlighter-rouge">Hello</code>가 출력되고, 또 1초후에 <code class="highlighter-rouge">Async</code>가 출력됩니다. 총 소요 시간은 2초 정도의 시간이 소요됩니다.</p>
+
+<p>이렇게 비동기 작업이 서로 연관이 없거나, 독립적인 요청으로 데이터를 불러올 수 있는 상황이라면 필요한 시점에 <code class="highlighter-rouge">await</code>를 사용하면 됩니다. 또 <code class="highlighter-rouge">Promise</code> 메소드를 이용하면 이렇게 표현할 수도 있습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">delay</span><span class="p">(</span><span class="nx">time</span><span class="p">,</span> <span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+      <span class="nx">res</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+    <span class="p">},</span> <span class="nx">time</span><span class="p">),</span>
+  <span class="p">)</span>
+<span class="p">}</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">_result1</span> <span class="o">=</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Hello</span><span class="dl">'</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">_result2</span> <span class="o">=</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Async</span><span class="dl">'</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">result1</span><span class="p">,</span> <span class="nx">result2</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="nx">_result1</span><span class="p">,</span> <span class="nx">_result2</span><span class="p">])</span>
+<span class="p">}</span>
+<span class="nx">myAsyncFunc</span><span class="p">()</span>
+</code></pre></div></div>
+
+<hr />
+
+<p> </p>
+
+<h3 id="3-asyncawait-예외-처리하기">3. async/await 예외 처리하기</h3>
+
+<p><code class="highlighter-rouge">async function</code>에서 <strong>예외 처리</strong>방법은 <code class="highlighter-rouge">try/catch</code>를 이용합니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">https://jsonplaceholder.typicode.com</span><span class="dl">'</span>
+<span class="kd">const</span> <span class="nx">getData</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">field</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">_id</span> <span class="o">=</span> <span class="nx">id</span> <span class="p">?</span> <span class="s2">`/</span><span class="p">${</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span> <span class="p">:</span> <span class="dl">''</span>
+  <span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">url</span><span class="p">}</span><span class="s2">/</span><span class="p">${</span><span class="nx">field</span><span class="p">}${</span><span class="nx">_id</span><span class="p">}</span><span class="s2">`</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+<span class="p">}</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">posts</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getData</span><span class="p">(</span><span class="dl">'</span><span class="s1">posts</span><span class="dl">'</span><span class="p">)</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">posts</span><span class="p">)</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="nx">myAsyncFunc</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">async function</code>내에서 발생하는 오류에 대해 위와 같이 처리할 수 있습니다. 비동기에 대한 오류 뿐만 아니라 일반적인 오류도 처리할 수 있습니다. 만약 <code class="highlighter-rouge">await</code>가 기다리는 <code class="highlighter-rouge">promise</code>인 <code class="highlighter-rouge">getData</code>함수가 <code class="highlighter-rouge">rejected</code>를 반환한다면 오류가 발생하게 됩니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">https://jsonplaceholder.typicode.com</span><span class="dl">'</span>
+<span class="k">async</span> <span class="kd">function</span> <span class="nx">myAsyncFunc</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">posts</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">url</span><span class="p">}</span><span class="s2">/posts`</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Error in Async!!</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">posts</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">myAsyncFunc</span><span class="p">()</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Done</span><span class="dl">'</span><span class="p">))</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">e</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>만약 <code class="highlighter-rouge">async function</code>에서 에러를 처리해주지 않으면 <code class="highlighter-rouge">async function</code>이 반환하는 <code class="highlighter-rouge">promise</code>가 <code class="highlighter-rouge">rejected</code>상태와 오류를 반환해줍니다. 이 경우에는 <code class="highlighter-rouge">async function</code>이 호출된 부분에서 에러를 처리해주어야 합니다.</p>
+
+<p> </p>
+
+<h2 id="마무리">마무리</h2>
+
+<p>자바스크립트의 비동기 처리에 대해 알아보았습니다. <strong>async/await</strong>를 이용하면 조금 더 직관적인 코드를 작성할 수 있을 것입니다.</p>
+
+<p>특히 <strong>Promise</strong>를 기반으로 하고 있기 때문에, 직관적이면서도 비동기 작업을 단순히 동기적으로 보여지는 가독성만 높이는 것이 아니라, 하나의 값으로 다루면서 유연하게 처리할 수 있도록 공부해야겠습니다.</p>
+
+        <div class="post-bottom-margin"></div>
+         
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#javascript"
+  title=""
+>
+  <span class="label">
+      javascript
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#promise"
+  title=""
+>
+  <span class="label">
+      promise
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#async/await"
+  title=""
+>
+  <span class="label">
+      async/await
+  </span>
+  
+</span>
+ 
+        <div></div>
+         <div style="height: 30px;"></div>
+<div id="disqus_thread"></div>
+<script>
+  /**
+   *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+   *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+  (function () {
+    // DON'T EDIT BELOW THIS LINE
+    var d = document,
+      s = d.createElement("script");
+    s.src = "https://itsdone.disqus.com/embed.js";
+    s.setAttribute("data-timestamp", +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+ 
+
+        <div class="post-bottom-margin"></div>
+
+        <!-- <div class="clearfix">
+          
+          <a
+            class="btn btn-primary float-left"
+            href="/posts/6"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Javascript의 비동기 처리, Promise를 알아보자"
+            >&larr; Previous<span class="d-none d-md-inline"> Post</span></a
+          >
+           
+          <a
+            class="btn btn-primary float-right"
+            href="/posts/8"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Mobx의 상태 변화, Action을 알아보자(feat. 비동기 Action)"
+            >Next<span class="d-none d-md-inline"> Post</span> &rarr;</a
+          >
+          
+        </div> -->
+      </div>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:kadr8941@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/hoontae24">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; hoontae 2020</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/vendor/startbootstrap-clean-blog/js/clean-blog.min.js"></script>
+
+<script src="/assets/scripts.js"></script>
+<script src="/assets/js/post.js"></script>
+<script src="/assets/js/global.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151335869-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151335869-1');
+</script>
+
+
+  <div class="scrollToTopButton" onclick="_toTop()">
+  <i class="fas fa-arrow-up"></i>
+</div>
+
+<script>
+  const _toTop = () => {
+    const isHigh = window.scrollY > 2000
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: isHigh ? 'auto' : 'smooth',
+    })
+  }
+  onMount(() => {
+    const btn = document.querySelector('div.scrollToTopButton')
+    const showBtn = () => {
+      window.scrollY > 100
+        ? !btn.classList.contains('show') && btn.classList.add('show')
+        : btn.classList.contains('show') && btn.classList.remove('show')
+    }
+    showBtn()
+    window.addEventListener('scroll', showBtn)
+  })
+</script>
+
+<style>
+  .scrollToTopButton {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    right: 40px;
+    bottom: 40px;
+
+    cursor: pointer;
+    border: 1px solid #000000a2;
+    color: #000000a2;
+    background-color: #ffffff99;
+    border-radius: 50%;
+    overflow: hidden;
+    visibility: hidden;
+  }
+  .scrollToTopButton.show {
+    visibility: visible;
+  }
+  @media only screen and (max-width: 767px) {
+    .scrollToTopButton {
+      width: 30px;
+      height: 30px;
+      right: 20px;
+      bottom: 20px;
+    }
+  }
+</style>
+
+</body>
+</html>

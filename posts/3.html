@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Svelte로 만드는 TODO-App (1) | 코드블로그_
+    
+  </title>
+  <meta name="description" content="최신 프론트엔드 기술 중 Svelte라는 기술에 대해 TODO-App 제작을 하면서 알아보겠습니다.">
+  <!-- Begin Jekyll SEO tag v2.6.1 -->
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Svelte로 만드는 TODO-App (1)" />
+<meta name="author" content="Hoontae" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="최신 프론트엔드 기술 중 Svelte라는 기술에 대해 TODO-App 제작을 하면서 알아보겠습니다." />
+<meta property="og:description" content="최신 프론트엔드 기술 중 Svelte라는 기술에 대해 TODO-App 제작을 하면서 알아보겠습니다." />
+<link rel="canonical" href="https://hoontae24.github.io/posts/3" />
+<meta property="og:url" content="https://hoontae24.github.io/posts/3" />
+<meta property="og:site_name" content="코드블로그_" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-11-02T00:00:00+09:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hoontae24.github.io/posts/3"},"datePublished":"2019-11-02T00:00:00+09:00","url":"https://hoontae24.github.io/posts/3","author":{"@type":"Person","name":"Hoontae"},"headline":"Svelte로 만드는 TODO-App (1)","dateModified":"2019-11-02T00:00:00+09:00","description":"최신 프론트엔드 기술 중 Svelte라는 기술에 대해 TODO-App 제작을 하면서 알아보겠습니다.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+  <link rel='stylesheet' href='//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.css'>
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/assets/vendor/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+
+  <link href="/img/ico/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon"/>
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://hoontae24.github.io/posts/3">
+  <link rel="alternate" type="application/rss+xml" title="코드블로그_" href="/feed.xml">
+
+</head>
+
+<script>
+  const listeners = []
+  const onMount = listener => listeners.push(listener)
+  window.addEventListener('load', () => {
+    listeners.forEach(listener => listener && listener())
+  })
+</script>
+
+<body>
+  <!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="position: fixed;" id="mainNav">
+  <div class="navbar-wrapper">
+    <a class="navbar-brand" href="/" >
+      코드블로그_
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav ml-auto">
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="/">HOME</a>
+      </li> -->
+      <li class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </li>
+      <!-- <li class="nav-item">
+          <a class="nav-link" href="/tags">TAGS</a>
+      </li> -->
+      <li class="nav-item">
+          <a class="nav-link" href="/archives">ARCHIVES</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="/about">ABOUT</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+  <!-- Page Header -->
+
+<header
+  class="masthead"
+  style="background-image: url('/img/posts/svelte/svelte_2.png')"
+>
+  
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-heading">
+            <h1>Svelte로 만드는 TODO-App (1)</h1>
+            
+            <h2 class="subheading">Svelte 설치하기 / 컴포넌트 구성하기</h2>
+            
+            <span class="meta">
+              <!-- >Posted by
+              <a href="/about"
+                >Hoontae</a
+              >
+              on  -->
+              2019.11.02 &middot; <span class="reading-time" title="Estimated read time">
+  
+   11 mins  read </span>
+
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container post">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto wrapper">
+        
+<div class="series wrapper">
+      
+
+  
+  
+  
+  <div class="title-wrapper">
+    <span class="series-label">SERIES</span> 
+    <span class="title">
+      Svelte TODO-APP Tutorials
+      <span class="count">1/3</span>
+    </span>
+    <button
+      class="btn btn-outline-secondary folded"
+      onclick="toggleFold()"
+    >
+      <i class="fas fa-chevron-down"></i>
+    </button>
+    <button
+      class="btn btn-outline-secondary unfolded"
+      onclick="toggleFold()"
+    >
+      <i class="fas fa-chevron-up"></i>
+    </button>
+  </div>
+
+  <!--  -->
+  <ol class="item-wrapper">
+         
+    <li class="post-title">
+      
+      <span class="current">
+        Svelte로 만드는 TODO-App (1) - Svelte 설치하기 / 컴포넌트 구성하기
+      </span>
+      
+    </li>
+      
+    <li class="post-title">
+      
+      <a class="text" href="/posts/4">
+        Svelte로 만드는 TODO-App (2) - 데이터 Store 구현하기 / 간단한 CRUD 구현하기
+      </a>
+      
+    </li>
+      
+    <li class="post-title">
+      
+      <a class="text" href="/posts/5">
+        Svelte로 만드는 TODO-App (3) - Item 순서 변경하기
+      </a>
+      
+    </li>
+                       
+  </ol>
+
+</div>
+
+
+<script>
+  const btnFolded = document.querySelector('.btn.folded')
+  const btnUnfolded = document.querySelector('.btn.unfolded')
+  btnFolded && btnFolded.classList.add('hidden')
+  btnUnfolded && btnUnfolded.classList.remove('hidden')  
+
+  function toggleFold () {
+    const btnFolded = document.querySelector('.btn.folded')
+    const btnUnfolded = document.querySelector('.btn.unfolded')
+    const titleWrapper = document.querySelector('.title-wrapper')
+    const itemWrapper = document.querySelector('.item-wrapper')
+    btnFolded.classList.toggle('hidden')
+    btnUnfolded.classList.toggle('hidden')
+    titleWrapper.classList.toggle('folded')
+    itemWrapper.classList.toggle('folded')
+  }
+</script>
+ <p>최신 프론트엔드 기술 중 <a href="https://svelte.dev/">Svelte</a>라는 기술에 대해 TODO-App 제작을 하면서 알아보겠습니다.</p>
+
+<p>Svelte에 대한 소개나 API는 <a href="https://svelte.dev/docs">공식문서</a>나 아래의 자료를 읽어주세요.</p>
+
+<ul>
+  <li><a href="https://velog.io/@ashnamuh/hello-svelte">웹 프레임워크 Svelte를 소개합니다.</a></li>
+  <li><a href="https://heropy.blog/2019/09/29/svelte/">SvelteJS(스벨트) - 새로운 개념의 프론트엔드 프레임워크</a></li>
+</ul>
+
+<p><em>이 글은 Svelte 실습 예제입니다.</em>
+<em>전체 프로젝트 코드는 <a href="https://github.com/hoontae24/hello-svelte">Github</a>에서 보실 수 있습니다.</em></p>
+
+<hr />
+
+<h3 id="1-svelte-설치하기">1. Svelte 설치하기</h3>
+
+<p>먼저 Svelte를 설치합니다. Svelte 공식 사이트의 <a href="https://svelte.dev/blog/the-easiest-way-to-get-started">QuickStart Guide</a>를 참조해 주세요.</p>
+
+<p>터미널에서 degit을 이용해서 Svelte 프로젝트 템플릿을 내려받을 수 있습니다.</p>
+
+<blockquote>
+  <p>$ npx degit sveltejs/template svelte-todo-app<br />
+$ cd svelte-todo-app<br />
+$ npm install<br />
+$ npm run dev</p>
+</blockquote>
+
+<p>위의 작업을 마치고 <a href="http://localhost:5000">http://localhost:5000</a>에 접속해봅니다. 프로젝트 설치는 잘된 것 같습니다.</p>
+
+<p><img src="/img/posts/svelte/svelte_helloworld.png" alt="Svelte_Helloword" /></p>
+
+<h3 id="2-컴포넌트-만들기">2. 컴포넌트 만들기</h3>
+
+<p>TODO를 구성할 “할 일” 항목은 <strong>Item</strong>입니다.
+<strong>Item</strong>이 모여서 <strong>Board</strong>를 구성하고, <strong>Board</strong>를 통해 “할 일의 진행 상태”를 구분하도록 하겠습니다.
+그리고 꼭 필요한 것은 아니지만, <strong>Appbar</strong>를 만들도록 하겠습니다.</p>
+
+<p>그리고 저는 CSS 디자인 감각이 없어서 부트스트랩의 도움을 받도록 하겠습니다.<br />
+구글에서 <code class="highlighter-rouge">부트스트랩</code>을 검색하고 홈페이지에서 CDN을 가져오겠습니다.</p>
+
+<p><img src="/img/posts/svelte/svelte_bootstrap.png" alt="Appbar" /></p>
+
+<p>프로젝트에서 <code class="highlighter-rouge">public/index.html</code> 파일의 <code class="highlighter-rouge">&lt;head&gt;</code>태그 안에 cdn을 붙여 넣어줍니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- public/index.html --&gt;</span>
+<span class="nt">&lt;link</span>
+  <span class="na">rel=</span><span class="s">"stylesheet"</span>
+  <span class="na">href=</span><span class="s">"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"</span>
+  <span class="na">integrity=</span><span class="s">"sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"</span>
+  <span class="na">crossorigin=</span><span class="s">"anonymous"</span>
+<span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<h4 id="21-appbar-컴포넌트-만들기">2.1 Appbar 컴포넌트 만들기</h4>
+
+<p>먼저 Appbar를 만들겠습니다. 없어도 전혀 지장이 없지만, 너무 밋밋하면 재미없으니까요.</p>
+
+<p><code class="highlighter-rouge">/src</code> 폴더 아래에 <code class="highlighter-rouge">components</code>폴더를 만들고, 그 아래 <code class="highlighter-rouge">Appbar.svelte</code> 파일을 만들겠습니다. 또 <code class="highlighter-rouge">Board.svelte</code>와 <code class="highlighter-rouge">Item.svelte</code> 파일도 미리 만들어 두겠습니다.</p>
+
+<p><img src="/img/posts/svelte/svelte_diretory.png" alt="디렉토리" /></p>
+
+<p><strong>Appbar</strong>에는 간단하게 제목 정도 나오게 만들어 주겠습니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Appbar.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="kd">const</span> <span class="nx">appTitle</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Svelte Todo App</span><span class="dl">'</span>
+<span class="nt">&lt;/script&gt;</span>
+
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"appbar"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;h1</span> <span class="na">class=</span><span class="s">"title"</span><span class="nt">&gt;</span>{appTitle}<span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+
+<span class="nt">&lt;style&gt;</span>
+  <span class="nc">.appbar</span> <span class="p">{</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="n">darkslategrey</span><span class="p">;</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">8px</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nc">.appbar</span> <span class="o">&gt;</span> <span class="nc">.title</span> <span class="p">{</span>
+    <span class="nl">text-align</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">white</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">App.svelte</code> 파일로 가서 <strong>Appbar</strong> 컴포넌트를 추가해 주겠습니다.</p>
+
+<p><code class="highlighter-rouge">&lt;script&gt;</code>태그 가장 위에 <code class="highlighter-rouge">import</code> 구문을 입력하고, 페이지에 표시될 태그 상단에 <code class="highlighter-rouge">&lt;Appbar /&gt;</code>를 추가해줍니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- App.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">import</span> <span class="nx">Appbar</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./components/Appbar.svelte</span><span class="dl">'</span>
+
+  <span class="k">export</span> <span class="kd">let</span> <span class="nx">name</span>
+<span class="nt">&lt;/script&gt;</span>
+
+<span class="nt">&lt;style&gt;</span>
+  <span class="nt">h1</span> <span class="p">{</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">purple</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+
+<span class="nt">&lt;Appbar</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;h1&gt;</span>Hello {name}!<span class="nt">&lt;/h1&gt;</span>
+</code></pre></div></div>
+
+<p>그리고 앱의 내용들이 가운데 올 수 있도록 <code class="highlighter-rouge">Container</code>로 감싸도록 하겠습니다.</p>
+
+<p><code class="highlighter-rouge">src/App.svelte</code> 파일을 수정합니다. 기존의 내용 부분에 있던 코드를 <code class="highlighter-rouge">container</code>클래스를 가진 <code class="highlighter-rouge">&lt;div&gt;</code>태그로 감싸줍니다. 부트스트랩에 정의된 클래스이기 때문에 <code class="highlighter-rouge">&lt;div&gt;</code>태그가 <a href="https://getbootstrap.com/docs/4.3/layout/overview/">컨테이너</a> 역할을 합니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- App.svelte --&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;h1&gt;</span>Hello {name}!<span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p>이제 브라우저에 가서 확인해 봅니다.</p>
+
+<p><img src="/img/posts/svelte/svelte_appbar.png" alt="Appbar" /></p>
+
+<p><strong>Appbar</strong>와 <strong>부트스트랩</strong>이 적용된 <strong>Container</strong>가 잘 나오는 것을 확인할 수 있습니다.</p>
+
+<h4 id="22-board-컴포넌트-만들기">2.2 Board 컴포넌트 만들기</h4>
+
+<p>다음은 제대로 Todo-App에 쓰일 부분들을 만들도록 하겠습니다.</p>
+
+<p><code class="highlighter-rouge">src/components/Board.svelte</code>로 가서 <strong>Board</strong>를 만들도록 하겠습니다.</p>
+
+<p>먼저 간단하게 제목 정도만 표시할 수 있도록 해주겠습니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Board.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">export</span> <span class="kd">let</span> <span class="nx">board</span> <span class="o">=</span> <span class="kc">null</span>
+<span class="nt">&lt;/script&gt;</span>
+
+{#if board}
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"board wrapper card"</span><span class="nt">&gt;</span>
+  <span class="c">&lt;!-- 부트스트랩의 card 디자인 이용 --&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card-body"</span><span class="nt">&gt;</span>
+    {board.title}
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+{/if}
+
+<span class="nt">&lt;style&gt;</span>
+  <span class="nc">.board.wrapper</span> <span class="p">{</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="m">#e9ecef</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+
+<p>기초적인 문법을 잠깐 짚고 넘어가겠습니다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">let</span> <span class="nx">board</span> <span class="o">=</span> <span class="kc">null</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">Svelte</code>에서 <code class="highlighter-rouge">&lt;script&gt;</code>태그 내부에 <code class="highlighter-rouge">export</code>구문을 쓰면 부모 컴포넌트의 값을 받아오는 <strong>props</strong>가 됩니다. (만약 부모 컴포넌트에서 넘겨주는 값이 없다면 여기서는 <code class="highlighter-rouge">null</code>로 지정됩니다.)</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card-body"</span><span class="nt">&gt;</span>
+  {board.title}
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p>일반적인 html태그를 쓰는 부분에서 {}를 이용하여 script에서 선언한 변수를 참조할 수 있습니다. <code class="highlighter-rouge">{board.title}</code>은 부모 컴포넌트에서 넘겨준 <code class="highlighter-rouge">board</code>객체의 <code class="highlighter-rouge">title</code>속성을 가져옵니다.</p>
+
+<p>이제 부모 컴포넌트인 <code class="highlighter-rouge">App.svelte</code>로 가서 <strong>Board</strong>를 구성해줍니다.</p>
+
+<p><code class="highlighter-rouge">&lt;script&gt;</code>태그 상단에서 <code class="highlighter-rouge">Board</code>컴포넌트를 불러옵니다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Board</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./components/Board.svelte</span><span class="dl">'</span>
+</code></pre></div></div>
+
+<p>그리고 그 아래에 Board로 사용할 임시 데이터를 선언해줍니다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">boards</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Planning</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">In Progress</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">All Done</span><span class="dl">'</span> <span class="p">},</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">container</code>안쪽 부분의 원래 내용을 지우고 Board를 다음과 같이 작성합니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+  {#each boards as board}
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"item"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;Board</span> <span class="na">board=</span><span class="s">{board}</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+  {/each}
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">Svelte</code>의 <code class="highlighter-rouge">#each</code>구문은 <a href="https://svelte.dev/docs#each">여기</a>서 확인하세요.<br />
+items 배열에 있는 값을 하나씩 꺼내 item이라는 변수로 참조하게 합니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;Board</span> <span class="na">board=</span><span class="s">{board}</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">&lt;Board&gt;</code> 컴포넌트의 <code class="highlighter-rouge">board</code>속성으로 값을 지정하면 <code class="highlighter-rouge">Board.svelte</code>에서 <code class="highlighter-rouge">export</code> 구문으로 선언한 <code class="highlighter-rouge">board</code>에 전달됩니다.</p>
+
+<p>각 <code class="highlighter-rouge">Board</code>에 CSS를 약간 추가해줍니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;style&gt;</span>
+  <span class="nc">.container</span> <span class="p">{</span>
+    <span class="nl">overflow</span><span class="p">:</span> <span class="nb">auto</span><span class="p">;</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nc">.container</span> <span class="nc">.item</span> <span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">300px</span><span class="p">;</span>
+    <span class="nl">flex-grow</span><span class="p">:</span> <span class="m">1</span><span class="p">;</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">32px</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+
+<p>그리고 전체 페이지의 배경화면을 약간 어둡게 바꾸겠습니다.<br />
+<code class="highlighter-rouge">public/global.css</code>파일의 <code class="highlighter-rouge">body</code>부분에 다음과 같이 추가하겠습니다.</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">body</span> <span class="p">{</span>
+  <span class="nl">padding</span><span class="p">:</span> <span class="m">0px</span><span class="p">;</span> <span class="c">/* padding: 8px;에서 수정 */</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="m">#ccc</span> <span class="cp">!important</span><span class="p">;</span> <span class="c">/* 추가 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>제대로 동작하는지 확인해 보겠습니다.</p>
+
+<p><img src="/img/posts/svelte/svelte_board.png" alt="-" /></p>
+
+<p><code class="highlighter-rouge">App.svelte</code>에 선언한 <code class="highlighter-rouge">boards</code>의 데이터가 컴포넌트의 속성을 통해서 주입된 것을 확인할 수 있습니다.</p>
+
+<h4 id="23-item-컴포넌트-만들기">2.3 Item 컴포넌트 만들기</h4>
+
+<p>먼저 <code class="highlighter-rouge">item</code>으로 사용될 임시 데이터를 만듭니다.</p>
+
+<p><code class="highlighter-rouge">App.svelte</code>파일의 <code class="highlighter-rouge">&lt;script&gt;</code>태그에 다음 내용을 추가해줍니다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">items</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">boardId</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">자료 조사하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="na">boardId</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">교양책 읽기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="na">boardId</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">분리수거하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="na">boardId</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">가계부 정리하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="na">boardId</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">버그 수정하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>그리고 이전에 만들어 둔 <code class="highlighter-rouge">boards</code>데이터에 <code class="highlighter-rouge">id</code>속성을 추가해줍니다.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">boards</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Planning</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">In Progress</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">All Done</span><span class="dl">'</span> <span class="p">},</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>각 <code class="highlighter-rouge">item</code>들은 자신이 속하는 <code class="highlighter-rouge">Board</code>의 <code class="highlighter-rouge">id</code>값을 가지고 있습니다.</p>
+
+<p><code class="highlighter-rouge">Board.svelte</code>파일로 가서 <code class="highlighter-rouge">Board</code>의 제목 아래에 <code class="highlighter-rouge">item</code>들이 표시되도록 합니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Board.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">import</span> <span class="nx">Item</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Item.svelte</span><span class="dl">'</span> <span class="c1">// Item 컴포넌트를 불러옵니다.</span>
+
+  <span class="k">export</span> <span class="kd">let</span> <span class="nx">board</span> <span class="o">=</span> <span class="kc">null</span>
+  <span class="k">export</span> <span class="kd">let</span> <span class="nx">items</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">// App 컴포넌트에서 전달하는 items를 받습니다.</span>
+<span class="nt">&lt;/script&gt;</span>
+
+{#if board}
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"board wrapper card"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card-body"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;h5</span> <span class="na">class=</span><span class="s">"card-title"</span><span class="nt">&gt;</span>
+      {board.title}
+    <span class="nt">&lt;/h5&gt;</span>
+    {#each items as item (item.id)}
+    <span class="nt">&lt;Item</span> <span class="err">{</span><span class="na">item</span><span class="err">}</span> <span class="nt">/&gt;</span>
+    <span class="c">&lt;!-- &lt;Item item={item} /&gt;과 동일함. 속성과 변수명이 같으면 생략가능 --&gt;</span>
+    {/each}
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+{/if}
+
+<span class="nt">&lt;style&gt;</span>
+  <span class="nc">.board.wrapper</span> <span class="p">{</span>
+    <span class="nl">background-color</span><span class="p">:</span> <span class="m">#ebebeb</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">Item.svelte</code>파일에서 <code class="highlighter-rouge">item</code>이 표시되도록 다음과 같이 작성해줍니다. (주석으로 표시한 부분만 이해하면 됩니다.)</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Item.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">export</span> <span class="kd">let</span> <span class="nx">item</span> <span class="o">=</span> <span class="kc">null</span> <span class="c1">// Board에서 item값을 전달 받습니다.</span>
+  <span class="kd">let</span> <span class="nx">hovering</span> <span class="o">=</span> <span class="kc">false</span>
+<span class="nt">&lt;/script&gt;</span>
+
+{#if item}
+<span class="nt">&lt;div</span>
+  <span class="na">class=</span><span class="s">"item card p-1 mb-1 shadow-sm"</span>
+	<span class="na">class:shadow=</span><span class="s">{hovering}</span>
+	<span class="na">on:mouseenter=</span><span class="s">{()</span> <span class="err">=</span><span class="nt">&gt;</span> hovering = true}
+	on:mouseleave={() =&gt; hovering = false}
+&gt;
+  <span class="nt">&lt;span&gt;</span>
+    {item.title}
+    <span class="c">&lt;!-- item의 제목을 출력합니다. --&gt;</span>
+  <span class="nt">&lt;/span&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+{/if}
+
+<span class="nt">&lt;style&gt;</span>
+  <span class="nc">.item</span> <span class="p">{</span>
+    <span class="nl">transition</span><span class="p">:</span> <span class="n">box-shadow</span> <span class="m">0.25s</span> <span class="n">ease-in</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+
+<p><img src="/img/posts/svelte/svelte_item.png" alt="-" /></p>
+
+<p>각 <code class="highlighter-rouge">item</code>의 제목도 잘 출력되고, hover에도 반응하는 것을 볼 수 있습니다.</p>
+
+<hr />
+
+<p>다음 시간에는 임시로 만들었던 <code class="highlighter-rouge">boards</code>와 <code class="highlighter-rouge">items</code> 데이터를 <code class="highlighter-rouge">store</code>로 분리해 관리하고, 추가/삭제 등의 동작도 구현해보겠습니다.</p>
+
+<p><em>전체 프로젝트 코드는 <a href="https://github.com/hoontae24/hello-svelte">Github</a>에서 보실 수 있습니다.</em></p>
+
+        <div class="post-bottom-margin"></div>
+         
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#javascript"
+  title=""
+>
+  <span class="label">
+      javascript
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#frontend"
+  title=""
+>
+  <span class="label">
+      frontend
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#svelte"
+  title=""
+>
+  <span class="label">
+      svelte
+  </span>
+  
+</span>
+ 
+        <div></div>
+         <div style="height: 30px;"></div>
+<div id="disqus_thread"></div>
+<script>
+  /**
+   *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+   *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+  (function () {
+    // DON'T EDIT BELOW THIS LINE
+    var d = document,
+      s = d.createElement("script");
+    s.src = "https://itsdone.disqus.com/embed.js";
+    s.setAttribute("data-timestamp", +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+ 
+
+        <div class="post-bottom-margin"></div>
+
+        <!-- <div class="clearfix">
+          
+          <a
+            class="btn btn-primary float-left"
+            href="/posts/2"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Github Pages + Jekyll 기반 블로그 만들기 (2)"
+            >&larr; Previous<span class="d-none d-md-inline"> Post</span></a
+          >
+           
+          <a
+            class="btn btn-primary float-right"
+            href="/posts/4"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Svelte로 만드는 TODO-App (2)"
+            >Next<span class="d-none d-md-inline"> Post</span> &rarr;</a
+          >
+          
+        </div> -->
+      </div>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:kadr8941@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/hoontae24">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; hoontae 2020</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/vendor/startbootstrap-clean-blog/js/clean-blog.min.js"></script>
+
+<script src="/assets/scripts.js"></script>
+<script src="/assets/js/post.js"></script>
+<script src="/assets/js/global.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151335869-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151335869-1');
+</script>
+
+
+  <div class="scrollToTopButton" onclick="_toTop()">
+  <i class="fas fa-arrow-up"></i>
+</div>
+
+<script>
+  const _toTop = () => {
+    const isHigh = window.scrollY > 2000
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: isHigh ? 'auto' : 'smooth',
+    })
+  }
+  onMount(() => {
+    const btn = document.querySelector('div.scrollToTopButton')
+    const showBtn = () => {
+      window.scrollY > 100
+        ? !btn.classList.contains('show') && btn.classList.add('show')
+        : btn.classList.contains('show') && btn.classList.remove('show')
+    }
+    showBtn()
+    window.addEventListener('scroll', showBtn)
+  })
+</script>
+
+<style>
+  .scrollToTopButton {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    right: 40px;
+    bottom: 40px;
+
+    cursor: pointer;
+    border: 1px solid #000000a2;
+    color: #000000a2;
+    background-color: #ffffff99;
+    border-radius: 50%;
+    overflow: hidden;
+    visibility: hidden;
+  }
+  .scrollToTopButton.show {
+    visibility: visible;
+  }
+  @media only screen and (max-width: 767px) {
+    .scrollToTopButton {
+      width: 30px;
+      height: 30px;
+      right: 20px;
+      bottom: 20px;
+    }
+  }
+</style>
+
+</body>
+</html>

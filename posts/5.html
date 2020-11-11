@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Svelte로 만드는 TODO-App (3) | 코드블로그_
+    
+  </title>
+  <meta name="description" content="이번 포스트에서는 Item의 순서를 변경할 수 있도록 구현하겠습니다.">
+  <!-- Begin Jekyll SEO tag v2.6.1 -->
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Svelte로 만드는 TODO-App (3)" />
+<meta name="author" content="Hoontae" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="이번 포스트에서는 Item의 순서를 변경할 수 있도록 구현하겠습니다." />
+<meta property="og:description" content="이번 포스트에서는 Item의 순서를 변경할 수 있도록 구현하겠습니다." />
+<link rel="canonical" href="https://hoontae24.github.io/posts/5" />
+<meta property="og:url" content="https://hoontae24.github.io/posts/5" />
+<meta property="og:site_name" content="코드블로그_" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-11-29T00:00:00+09:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hoontae24.github.io/posts/5"},"datePublished":"2019-11-29T00:00:00+09:00","url":"https://hoontae24.github.io/posts/5","author":{"@type":"Person","name":"Hoontae"},"headline":"Svelte로 만드는 TODO-App (3)","dateModified":"2019-11-29T00:00:00+09:00","description":"이번 포스트에서는 Item의 순서를 변경할 수 있도록 구현하겠습니다.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+  <link rel='stylesheet' href='//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.css'>
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/assets/vendor/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+
+  <link href="/img/ico/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon"/>
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://hoontae24.github.io/posts/5">
+  <link rel="alternate" type="application/rss+xml" title="코드블로그_" href="/feed.xml">
+
+</head>
+
+<script>
+  const listeners = []
+  const onMount = listener => listeners.push(listener)
+  window.addEventListener('load', () => {
+    listeners.forEach(listener => listener && listener())
+  })
+</script>
+
+<body>
+  <!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="position: fixed;" id="mainNav">
+  <div class="navbar-wrapper">
+    <a class="navbar-brand" href="/" >
+      코드블로그_
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav ml-auto">
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="/">HOME</a>
+      </li> -->
+      <li class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </li>
+      <!-- <li class="nav-item">
+          <a class="nav-link" href="/tags">TAGS</a>
+      </li> -->
+      <li class="nav-item">
+          <a class="nav-link" href="/archives">ARCHIVES</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="/about">ABOUT</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+  <!-- Page Header -->
+
+<header
+  class="masthead"
+  style="background-image: url('/img/posts/svelte/svelte_2.png')"
+>
+  
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-heading">
+            <h1>Svelte로 만드는 TODO-App (3)</h1>
+            
+            <h2 class="subheading">Item 순서 변경하기</h2>
+            
+            <span class="meta">
+              <!-- >Posted by
+              <a href="/about"
+                >Hoontae</a
+              >
+              on  -->
+              2019.11.29 &middot; <span class="reading-time" title="Estimated read time">
+  
+   8 mins  read </span>
+
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container post">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto wrapper">
+        
+<div class="series wrapper">
+      
+
+  
+  
+  
+  <div class="title-wrapper">
+    <span class="series-label">SERIES</span> 
+    <span class="title">
+      Svelte TODO-APP Tutorials
+      <span class="count">3/3</span>
+    </span>
+    <button
+      class="btn btn-outline-secondary folded"
+      onclick="toggleFold()"
+    >
+      <i class="fas fa-chevron-down"></i>
+    </button>
+    <button
+      class="btn btn-outline-secondary unfolded"
+      onclick="toggleFold()"
+    >
+      <i class="fas fa-chevron-up"></i>
+    </button>
+  </div>
+
+  <!--  -->
+  <ol class="item-wrapper">
+         
+    <li class="post-title">
+      
+      <a class="text" href="/posts/3">
+        Svelte로 만드는 TODO-App (1) - Svelte 설치하기 / 컴포넌트 구성하기
+      </a>
+      
+    </li>
+      
+    <li class="post-title">
+      
+      <a class="text" href="/posts/4">
+        Svelte로 만드는 TODO-App (2) - 데이터 Store 구현하기 / 간단한 CRUD 구현하기
+      </a>
+      
+    </li>
+      
+    <li class="post-title">
+      
+      <span class="current">
+        Svelte로 만드는 TODO-App (3) - Item 순서 변경하기
+      </span>
+      
+    </li>
+                       
+  </ol>
+
+</div>
+
+
+<script>
+  const btnFolded = document.querySelector('.btn.folded')
+  const btnUnfolded = document.querySelector('.btn.unfolded')
+  btnFolded && btnFolded.classList.add('hidden')
+  btnUnfolded && btnUnfolded.classList.remove('hidden')  
+
+  function toggleFold () {
+    const btnFolded = document.querySelector('.btn.folded')
+    const btnUnfolded = document.querySelector('.btn.unfolded')
+    const titleWrapper = document.querySelector('.title-wrapper')
+    const itemWrapper = document.querySelector('.item-wrapper')
+    btnFolded.classList.toggle('hidden')
+    btnUnfolded.classList.toggle('hidden')
+    titleWrapper.classList.toggle('folded')
+    itemWrapper.classList.toggle('folded')
+  }
+</script>
+ <p>이번 포스트에서는 <code class="highlighter-rouge">Item</code>의 순서를 변경할 수 있도록 구현하겠습니다.</p>
+
+<h3 id="1-item-순서-변경-구현하기">1. Item 순서 변경 구현하기</h3>
+
+<p><code class="highlighter-rouge">Item</code>의 순서를 변경하여서 Todo-App을 사용하기 좋게 만들어 보겠습니다. 순서를 변경하는 UI/UX는 심플하게 드래그해서 변경할 수 있게 만들 것입니다.</p>
+
+<p><code class="highlighter-rouge">event</code>를 이용하여 구현할 수도 있겠지만, 해본 적도 없고 하니 이미 만들어진 라이브러리를 이용하여 적용해보겠습니다.</p>
+
+<h4 id="11-sortablejs-라이브러리-적용하기">1.1 Sortablejs 라이브러리 적용하기</h4>
+
+<p>정렬을 구현하는 여러 라이브러리 중 <a href="https://github.com/SortableJS/Sortable">Sortablejs</a>를 이용하겠습니다.</p>
+
+<p><code class="highlighter-rouge">npm</code>을 이용해서 설치하겠습니다.</p>
+
+<blockquote>
+  <p>$ npm install sortablejs</p>
+</blockquote>
+
+<p>이제 각 <code class="highlighter-rouge">Board</code>의 리스트에 적용해 보겠습니다. <code class="highlighter-rouge">Item</code>들을 감싸는 <code class="highlighter-rouge">div</code>를 만들어줍니다. 또 <code class="highlighter-rouge">list</code>라는 변수를 선언해주고 만들어 준 <code class="highlighter-rouge">div</code>에 바인딩 시켜주겠습니다.</p>
+
+<p><code class="highlighter-rouge">svelte</code>로 부터 <code class="highlighter-rouge">onMount</code>함수를 <code class="highlighter-rouge">import</code>하고, 그 안에 다음과 같이 구현해주세요. <code class="highlighter-rouge">list</code>변수에 <code class="highlighter-rouge">div</code> Element가 바인딩 되면 <code class="highlighter-rouge">Sortable</code> 라이브러리를 적용시키도록 합니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Board.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">import</span> <span class="p">{</span> <span class="nx">onMount</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">svelte</span><span class="dl">'</span>
+  <span class="k">import</span> <span class="nx">Sortable</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">sortablejs</span><span class="dl">'</span>
+  
+  <span class="kd">let</span> <span class="nx">list</span> <span class="o">=</span> <span class="kc">null</span>
+  <span class="nx">onMount</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">list</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">new</span> <span class="nx">Sortable</span><span class="p">(</span><span class="nx">list</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">})</span>
+<span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">{board.id}</span> <span class="na">class=</span><span class="s">"item-list"</span> <span class="na">bind:this=</span><span class="s">{list}</span><span class="nt">&gt;</span>
+{#each _items as item (item.id)}
+  <span class="nt">&lt;Item</span>
+    <span class="err">{</span><span class="na">item</span><span class="err">}</span>
+    <span class="na">on:update=</span><span class="s">{handleUpdateItem}</span>
+    <span class="na">on:remove=</span><span class="s">{handleRemoveItem}</span>
+  <span class="nt">/&gt;</span>
+{/each}
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p>이제 브라우저로 가서 잘 적용되었는지 확인해 봅니다. <code class="highlighter-rouge">Item</code>을 드래그해서 이동할 수 있게 되었고, 순서도 변경이 됩니다.</p>
+
+<p>하지만 DOM Element만 움직이는 것 일뿐, 아직 실제 <code class="highlighter-rouge">Store</code>에 있는 데이터의 순서가 변경되는 것은 아닙니다.</p>
+
+<h4 id="12-sortablejs를-이용하여-순서-변경-구현하기">1.2 Sortablejs를 이용하여 순서 변경 구현하기</h4>
+
+<p><code class="highlighter-rouge">Sortablejs</code>를 적용하여서 <code class="highlighter-rouge">DOM Element</code>를 드래그로 움직일 수 있게 했습니다. 드래그로 순서가 변경될 때, <code class="highlighter-rouge">Store</code>에 있는 실제 데이터가 변경되도록, 이벤트 핸들러를 연결시켜주면 됩니다.</p>
+
+<p>먼저 그 전에 <code class="highlighter-rouge">Store</code>에 있는 데이터에서 <code class="highlighter-rouge">Item</code>의 <code class="highlighter-rouge">id</code> 값을 약간 수정해주고, <code class="highlighter-rouge">Item</code> 컴포넌트에서 드래그 핸들을 만들어주도록 하겠습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// stores/index.js</span>
+<span class="kd">const</span> <span class="nx">_boards</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Planning</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">In Progress</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">All Done</span><span class="dl">'</span> <span class="p">},</span>
+<span class="p">]</span>
+
+<span class="kd">const</span> <span class="nx">_items</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="na">boardId</span><span class="p">:</span> <span class="nx">_boards</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">자료 조사하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="na">boardId</span><span class="p">:</span> <span class="nx">_boards</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">교양책 읽기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="na">boardId</span><span class="p">:</span> <span class="nx">_boards</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">분리수거하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="na">boardId</span><span class="p">:</span> <span class="nx">_boards</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">가계부 정리하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="na">boardId</span><span class="p">:</span> <span class="nx">_boards</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">버그 수정하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+<span class="p">]</span>
+
+<span class="kd">const</span> <span class="nx">createItems</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">subscribe</span><span class="p">,</span> <span class="nx">reset</span><span class="p">,</span> <span class="na">update</span><span class="p">:</span> <span class="nx">_update</span><span class="p">,</span> <span class="kd">set</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">items</span>
+  <span class="c1">// ...생략...</span>
+  <span class="k">return</span> <span class="p">{</span> <span class="nx">subscribe</span><span class="p">,</span> <span class="nx">reset</span><span class="p">,</span> <span class="kd">set</span><span class="p">,</span> <span class="nx">add</span><span class="p">,</span> <span class="nx">remove</span><span class="p">,</span> <span class="nx">update</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">Board</code>와 <code class="highlighter-rouge">Item</code>의 <code class="highlighter-rouge">id</code>를 이용해서 비교할 때, 문자와 숫자가 섞이면 비교하기 번거로우니 모두 문자로 수정하겠습니다. 그리고 <code class="highlighter-rouge">items</code>에 <code class="highlighter-rouge">set</code>함수를 넣어줘서 순서가 변경되면 적용되는 부분에 사용하도록 하겠습니다.</p>
+
+<p>다음은 <code class="highlighter-rouge">Item</code>컴포넌트를 수정해줍니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Item.svelte --&gt;</span>
+<span class="nt">&lt;div</span>
+  <span class="na">id=</span><span class="s">{item.id}</span>
+  <span class="na">class=</span><span class="s">"item card p-1 mb-2 shadow-sm"</span>
+  <span class="na">class:shadow=</span><span class="s">{hovering}</span>
+  <span class="na">on:mouseenter=</span><span class="s">{()</span> <span class="err">=</span><span class="nt">&gt;</span> hovering = true}
+  on:mouseleave={() =&gt; hovering = false}
+&gt;
+  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"drag-handle"</span><span class="nt">&gt;</span>=<span class="nt">&lt;/span&gt;</span>
+  {#if isEditable}
+  <span class="nt">&lt;input</span> <span class="na">bind:value=</span><span class="s">{item.title}</span> <span class="nt">/&gt;</span>
+  {:else}
+  <span class="nt">&lt;span</span> <span class="na">class:item-done=</span><span class="s">{item.done}</span> <span class="na">on:click=</span><span class="s">{handleToggleDone}</span><span class="nt">&gt;</span>
+    {item.title}
+  <span class="nt">&lt;/span&gt;</span>
+  {/if}
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"item-action"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"item-btn"</span> <span class="na">on:click=</span><span class="s">{handleToggleEditable}</span><span class="nt">&gt;</span>E<span class="nt">&lt;/button&gt;</span>
+    <span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"item-btn"</span> <span class="na">on:click=</span><span class="s">{handleRemoveItem}</span><span class="nt">&gt;</span>-<span class="nt">&lt;/button&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">Item</code>의 가장 상위 <code class="highlighter-rouge">div</code> 태그에 <code class="highlighter-rouge">id</code>속성을 넣어주었고, 드래그를 위한 핸들 아이콘을 하나 만들어 주었습니다.</p>
+
+<p>이제 순서가 변경될 수 있도록 <code class="highlighter-rouge">Sortable</code>에 옵션과 이벤트를 등록합니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Board.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="kd">const</span> <span class="nx">handleSortItem</span> <span class="o">=</span> <span class="nx">e</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">target</span> <span class="o">=</span> <span class="nx">$items</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">e</span><span class="p">.</span><span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+    <span class="kd">const</span> <span class="nx">allItems</span> <span class="o">=</span> <span class="nx">$items</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span> <span class="o">!==</span> <span class="nx">e</span><span class="p">.</span><span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+    <span class="kd">const</span> <span class="nx">_items</span> <span class="o">=</span> <span class="nx">allItems</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="nx">item</span><span class="p">.</span><span class="nx">boardId</span> <span class="o">===</span> <span class="nx">e</span><span class="p">.</span><span class="nx">to</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+    <span class="nx">target</span><span class="p">.</span><span class="nx">boardId</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">to</span><span class="p">.</span><span class="nx">id</span>
+    <span class="nx">_items</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">newIndex</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">target</span><span class="p">)</span>
+
+    <span class="kd">const</span> <span class="nx">newItems</span> <span class="o">=</span> <span class="nx">allItems</span>
+      <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="nx">item</span><span class="p">.</span><span class="nx">boardId</span> <span class="o">!==</span> <span class="nx">e</span><span class="p">.</span><span class="nx">to</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">_items</span><span class="p">)</span>
+    <span class="nx">items</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="nx">newItems</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="kd">let</span> <span class="nx">list</span> <span class="o">=</span> <span class="kc">null</span>
+  <span class="nx">onMount</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">list</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">new</span> <span class="nx">Sortable</span><span class="p">(</span><span class="nx">list</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">group</span><span class="p">:</span> <span class="dl">'</span><span class="s1">board</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">handle</span><span class="p">:</span> <span class="dl">'</span><span class="s1">.drag-handle</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">animation</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+        <span class="na">onEnd</span><span class="p">:</span> <span class="nx">handleSortItem</span><span class="p">,</span>
+      <span class="p">})</span>
+    <span class="p">}</span>
+  <span class="p">})</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">onMount</code>함수에서 <code class="highlighter-rouge">Sortable</code> 생성자에 옵션을 추가해줍니다.</p>
+
+<ul>
+  <li><code class="highlighter-rouge">group</code>옵션은 다른 <code class="highlighter-rouge">Board</code>의 리스트로 드래그하여 움직일 수 있게 해줍니다.</li>
+  <li><code class="highlighter-rouge">handle</code>옵션은 <code class="highlighter-rouge">Item</code>전체를 클릭하여 드래그하지 않고, <code class="highlighter-rouge">handle</code>에 주입된 클래스이름을 가진 <code class="highlighter-rouge">Element</code>를 클릭하여 드래그할 수 있게 해줍니다.</li>
+  <li><code class="highlighter-rouge">animation</code>옵션은 드래그로 <code class="highlighter-rouge">Item</code>의 순서가 변경될 때, 약간의 애니매이션을 사용합니다.</li>
+  <li><code class="highlighter-rouge">onEnd</code>옵션은 드래그가 끝났을 때, 이벤트 핸들러로 콜백 함수를 호출합니다. 실제 <code class="highlighter-rouge">Store</code>의 데이터를 변경하기 위해 사용됩니다.</li>
+</ul>
+
+<p><code class="highlighter-rouge">onEnd</code>옵션의 이벤트 핸들러로 위에서 선언한 <code class="highlighter-rouge">handleSortItem</code>함수를 호출합니다. 해당 함수에서는 실제 데이터의 순서가 변경되도록 구현합니다.</p>
+
+<p>이제 브라우저로 가서 확인해보겠습니다.</p>
+
+<p><img src="/img/posts/svelte/svelte_drag_item.gif" alt="svelte drag item" /></p>
+
+<p>잘 동작하는지 확인하고 싶으면, 순서 변경 후 <code class="highlighter-rouge">items</code>를 콘솔로 출력해보시면 됩니다.</p>
+
+<hr />
+
+<h3 id="마무리">마무리</h3>
+
+<p>여기까지 <strong>Svelte로 만드는 Todo-App</strong>을 만들어 보았습니다. <strong>Svelte</strong>를 공부하기 위해서 간단히 튜토리얼이나 공식문서를 훑어보았고, 어떻게 동작하는지 실습하는 형식으로 공부하기 위해 이 시리즈의 포스트를 작성하며 공부해 보았습니다.</p>
+
+<p>이제 기초적인 부분을 시작했고, 전반적으로 <code class="highlighter-rouge">Svelte</code>로 만든 앱이 어떻게 동작하는지 조금 알았으니, 공식 문서를 꼼꼼히 읽어보며 공부하면 더 도움이 될 것이고, 이해하기도 쉬울 것입니다.</p>
+
+<p><em>전체 프로젝트 코드는 <a href="https://github.com/hoontae24/hello-svelte">Github</a>에서 보실 수 있습니다.</em></p>
+
+        <div class="post-bottom-margin"></div>
+         
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#javascript"
+  title=""
+>
+  <span class="label">
+      javascript
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#frontend"
+  title=""
+>
+  <span class="label">
+      frontend
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#svelte"
+  title=""
+>
+  <span class="label">
+      svelte
+  </span>
+  
+</span>
+ 
+        <div></div>
+         <div style="height: 30px;"></div>
+<div id="disqus_thread"></div>
+<script>
+  /**
+   *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+   *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+  (function () {
+    // DON'T EDIT BELOW THIS LINE
+    var d = document,
+      s = d.createElement("script");
+    s.src = "https://itsdone.disqus.com/embed.js";
+    s.setAttribute("data-timestamp", +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+ 
+
+        <div class="post-bottom-margin"></div>
+
+        <!-- <div class="clearfix">
+          
+          <a
+            class="btn btn-primary float-left"
+            href="/posts/4"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Svelte로 만드는 TODO-App (2)"
+            >&larr; Previous<span class="d-none d-md-inline"> Post</span></a
+          >
+           
+          <a
+            class="btn btn-primary float-right"
+            href="/posts/6"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Javascript의 비동기 처리, Promise를 알아보자"
+            >Next<span class="d-none d-md-inline"> Post</span> &rarr;</a
+          >
+          
+        </div> -->
+      </div>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:kadr8941@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/hoontae24">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; hoontae 2020</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/vendor/startbootstrap-clean-blog/js/clean-blog.min.js"></script>
+
+<script src="/assets/scripts.js"></script>
+<script src="/assets/js/post.js"></script>
+<script src="/assets/js/global.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151335869-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151335869-1');
+</script>
+
+
+  <div class="scrollToTopButton" onclick="_toTop()">
+  <i class="fas fa-arrow-up"></i>
+</div>
+
+<script>
+  const _toTop = () => {
+    const isHigh = window.scrollY > 2000
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: isHigh ? 'auto' : 'smooth',
+    })
+  }
+  onMount(() => {
+    const btn = document.querySelector('div.scrollToTopButton')
+    const showBtn = () => {
+      window.scrollY > 100
+        ? !btn.classList.contains('show') && btn.classList.add('show')
+        : btn.classList.contains('show') && btn.classList.remove('show')
+    }
+    showBtn()
+    window.addEventListener('scroll', showBtn)
+  })
+</script>
+
+<style>
+  .scrollToTopButton {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    right: 40px;
+    bottom: 40px;
+
+    cursor: pointer;
+    border: 1px solid #000000a2;
+    color: #000000a2;
+    background-color: #ffffff99;
+    border-radius: 50%;
+    overflow: hidden;
+    visibility: hidden;
+  }
+  .scrollToTopButton.show {
+    visibility: visible;
+  }
+  @media only screen and (max-width: 767px) {
+    .scrollToTopButton {
+      width: 30px;
+      height: 30px;
+      right: 20px;
+      bottom: 20px;
+    }
+  }
+</style>
+
+</body>
+</html>

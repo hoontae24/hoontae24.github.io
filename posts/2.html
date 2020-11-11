@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Github Pages + Jekyll 기반 블로그 만들기 (2) | 코드블로그_
+    
+  </title>
+  <meta name="description" content="Github Pages를 이용하여 호스팅하는 블로그를 만들어보았다. 지금은 접속할 수 있는 환경을 만들어 둔 정도다. 이제 Jekyll을 좀 더 제대로 이용하면서 Theme 디자인 및 템플릿을 설정하여 블로그답게 만들 수 있다.">
+  <!-- Begin Jekyll SEO tag v2.6.1 -->
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Github Pages + Jekyll 기반 블로그 만들기 (2)" />
+<meta name="author" content="Hoontae" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Github Pages를 이용하여 호스팅하는 블로그를 만들어보았다. 지금은 접속할 수 있는 환경을 만들어 둔 정도다. 이제 Jekyll을 좀 더 제대로 이용하면서 Theme 디자인 및 템플릿을 설정하여 블로그답게 만들 수 있다." />
+<meta property="og:description" content="Github Pages를 이용하여 호스팅하는 블로그를 만들어보았다. 지금은 접속할 수 있는 환경을 만들어 둔 정도다. 이제 Jekyll을 좀 더 제대로 이용하면서 Theme 디자인 및 템플릿을 설정하여 블로그답게 만들 수 있다." />
+<link rel="canonical" href="https://hoontae24.github.io/posts/2" />
+<meta property="og:url" content="https://hoontae24.github.io/posts/2" />
+<meta property="og:site_name" content="코드블로그_" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-10-26T00:00:00+09:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hoontae24.github.io/posts/2"},"datePublished":"2019-10-26T00:00:00+09:00","url":"https://hoontae24.github.io/posts/2","author":{"@type":"Person","name":"Hoontae"},"headline":"Github Pages + Jekyll 기반 블로그 만들기 (2)","dateModified":"2019-10-26T00:00:00+09:00","description":"Github Pages를 이용하여 호스팅하는 블로그를 만들어보았다. 지금은 접속할 수 있는 환경을 만들어 둔 정도다. 이제 Jekyll을 좀 더 제대로 이용하면서 Theme 디자인 및 템플릿을 설정하여 블로그답게 만들 수 있다.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+  <link rel='stylesheet' href='//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.css'>
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/assets/vendor/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+
+  <link href="/img/ico/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon"/>
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://hoontae24.github.io/posts/2">
+  <link rel="alternate" type="application/rss+xml" title="코드블로그_" href="/feed.xml">
+
+</head>
+
+<script>
+  const listeners = []
+  const onMount = listener => listeners.push(listener)
+  window.addEventListener('load', () => {
+    listeners.forEach(listener => listener && listener())
+  })
+</script>
+
+<body>
+  <!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="position: fixed;" id="mainNav">
+  <div class="navbar-wrapper">
+    <a class="navbar-brand" href="/" >
+      코드블로그_
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav ml-auto">
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="/">HOME</a>
+      </li> -->
+      <li class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </li>
+      <!-- <li class="nav-item">
+          <a class="nav-link" href="/tags">TAGS</a>
+      </li> -->
+      <li class="nav-item">
+          <a class="nav-link" href="/archives">ARCHIVES</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="/about">ABOUT</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+  <!-- Page Header -->
+
+<header
+  class="masthead"
+  style="background-image: url('/img/posts/jekyll_github_blog/github_jekyll.jpg')"
+>
+  
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-heading">
+            <h1>Github Pages + Jekyll 기반 블로그 만들기 (2)</h1>
+            
+            <h2 class="subheading">Jekyll Theme 적용 및 첫번째 포스트 작성하기</h2>
+            
+            <span class="meta">
+              <!-- >Posted by
+              <a href="/about"
+                >Hoontae</a
+              >
+              on  -->
+              2019.10.26 &middot; <span class="reading-time" title="Estimated read time">
+  
+   4 mins  read </span>
+
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container post">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto wrapper">
+        
+<div class="series wrapper">
+    
+
+  
+  
+  
+  <div class="title-wrapper">
+    <span class="series-label">SERIES</span> 
+    <span class="title">
+      Github Pages + Jekyll 기반 블로그 만들기
+      <span class="count">2/2</span>
+    </span>
+    <button
+      class="btn btn-outline-secondary folded"
+      onclick="toggleFold()"
+    >
+      <i class="fas fa-chevron-down"></i>
+    </button>
+    <button
+      class="btn btn-outline-secondary unfolded"
+      onclick="toggleFold()"
+    >
+      <i class="fas fa-chevron-up"></i>
+    </button>
+  </div>
+
+  <!--  -->
+  <ol class="item-wrapper">
+     
+    <li class="post-title">
+      
+      <a class="text" href="/posts/1">
+        Github Pages + Jekyll 기반 블로그 만들기 (1) - Github Pages 호스팅 및 Jekyll 설치하기
+      </a>
+      
+    </li>
+      
+    <li class="post-title">
+      
+      <span class="current">
+        Github Pages + Jekyll 기반 블로그 만들기 (2) - Jekyll Theme 적용 및 첫번째 포스트 작성하기
+      </span>
+      
+    </li>
+                               
+  </ol>
+
+</div>
+
+
+<script>
+  const btnFolded = document.querySelector('.btn.folded')
+  const btnUnfolded = document.querySelector('.btn.unfolded')
+  btnFolded && btnFolded.classList.add('hidden')
+  btnUnfolded && btnUnfolded.classList.remove('hidden')  
+
+  function toggleFold () {
+    const btnFolded = document.querySelector('.btn.folded')
+    const btnUnfolded = document.querySelector('.btn.unfolded')
+    const titleWrapper = document.querySelector('.title-wrapper')
+    const itemWrapper = document.querySelector('.item-wrapper')
+    btnFolded.classList.toggle('hidden')
+    btnUnfolded.classList.toggle('hidden')
+    titleWrapper.classList.toggle('folded')
+    itemWrapper.classList.toggle('folded')
+  }
+</script>
+ <p>Github Pages를 이용하여 호스팅하는 블로그를 만들어보았다. 지금은 접속할 수 있는 환경을 만들어 둔 정도다. 이제 Jekyll을 좀 더 제대로 이용하면서 Theme 디자인 및 템플릿을 설정하여 블로그답게 만들 수 있다.</p>
+
+<hr />
+
+<h2 id="1-jekyll-theme-가져오기"><strong>1. Jekyll Theme 가져오기</strong></h2>
+
+<p>테마를 적용할 수 있는 방법은 여러가지이다. 아마 제일 쉬운 방법은 테마가 셋팅된 저장소를 그대로 가져오는 것이다. 사실 이전에 했던 작업이 그대로 덮어쓰여지기 때문에, 이전 포스트의 작업을 선행할 필요는 없다. 다만, Github Pages에 호스팅 하는 개념만 알고 있으면 된다.</p>
+
+<p>먼저 적용하고 싶은 테마를 <a href="http://jekyllthemes.org/">Jekyll Theme</a>, <a href="http://jekyllthemes.io/free">Free Jekyll Theme</a>에서 찾아본다. 이미 만들어져 있는 테마가 많기 때문에 자신이 원하는 스타일을 고르면 된다. 이후에 세부적인 부분은 코드를 수정해서 디자인할 수도 있다.</p>
+
+<p>나는 가장 상위에 있는 <strong><em>Now</em></strong> 라는 테마를 선택했다.</p>
+
+<p><img src="/img/posts/jekyll_github_blog/now.png" alt="Now Jekyll theme" /></p>
+
+<p>테마에 사용되는 플러그인 등에 따라 폴더 구조나 파일들이 제각각이다. 아직 Jekyll 블로그를 자유자재로 다룰 정도는 아니기 때문에 비교적 간단한 테마를 선택했다. 이제 테마의 Github 저장소에 가서 코드를 몽땅 다운로드한다.<br />
+(저장소를 Fork해서 가져와도 동일하다. 이 경우엔 fork해서 가져온 저장소의 이름을 이전 포스트에서 작업한 것 처럼 username.github.io로 변경해주고 내려받으면 된다.)</p>
+
+<p><img src="/img/posts/jekyll_github_blog/now-github.png" alt="Now Github Repository" /></p>
+
+<p>기존의 로컬 블로그 폴더에 있던 파일을 <strong>.git</strong> 폴더만 제외하고 모두 삭제한다.(.git 폴더를 지우면 Github 원격 저장소 연결이 사라진다.)<br />
+사용하고 싶은 테마의 저장소에서 내려받은 코드를 압축 해제하고, 다 지워버린 블로그 폴더에 붙여넣기 해준다.</p>
+
+<p>이제 덮어쓰여진 새로운 블로그를 로컬에서 띄워보자.</p>
+
+<blockquote>
+  <p>$ cd my-blog-site<br />
+$ jekyll serve</p>
+</blockquote>
+
+<p><a href="http://127.0.0.1:4000/">http://127.0.0.1:4000/</a> 으로 접속한다.</p>
+
+<p><img src="/img/posts/jekyll_github_blog/now-github-page.png" alt="Blog page updated" />
+<em class="text-center">(기본 테마와 크게 다른게 없는 것 같다…)</em></p>
+
+<hr />
+
+<h2 id="2-블로그-환경설정-변경하기"><strong>2. 블로그 환경설정 변경하기</strong></h2>
+
+<blockquote>
+  <p>Jekyll 의 핵심 역할은 텍스트 변환 엔진입니다.</p>
+</blockquote>
+
+<p>Jekyll은 정적인 사이트를 생성해준다. <a href="https://jekyllrb-ko.github.io/docs/structure/">디렉토리 구조</a>나 <a href="https://jekyllrb-ko.github.io/docs/configuration/">환경설정</a>을 통해 나만의 블로그 포맷을 만들 수 있는 것이다.</p>
+
+<p><strong>_config.yml</strong>파일을 열어 몇가지 설정을 변경해주어 커스터마이징 해보자. 아직은 모든 설정을 잘 모르기 때문에 중요한 부분들만 먼저 바꾸어 본다.</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">name</span><span class="pi">:</span> <span class="s">개발자 쌓아올리기</span>
+<span class="na">description</span><span class="pi">:</span> <span class="s">조금씩 쌓아보자, 개발지식</span>
+<span class="na">url</span><span class="pi">:</span> <span class="s">https://[username].github.io/</span>
+<span class="na">baseurl</span><span class="pi">:</span> <span class="s1">'</span><span class="s">'</span>
+</code></pre></div></div>
+
+<p>해당 부분들을 변경하고 새로고침하면 블로그의 이름과 설명이 자동으로 변경된다.</p>
+
+<p><img src="/img/posts/jekyll_github_blog/now-github-page-2.png" alt="Blog page updated" /></p>
+
+<p>기본으로 생성되어 있는 index.html 파일을 열어보면 다음과 같이 머리말이 지정되어있다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---
+layout: default
+---
+</code></pre></div></div>
+
+<p>layout으로 default라는 파일을 사용한다는 것인데, <strong>_layout</strong> 폴더의 <strong>default.html</strong> 파일을 보자.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nt">&lt;header</span> <span class="na">class=</span><span class="s">"masthead clearfix"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"{{ site.baseurl }}/"</span> <span class="na">class=</span><span class="s">"site-avatar"</span>
+    <span class="nt">&gt;&lt;img</span> <span class="na">src=</span><span class="s">"{{ site.avatar }}"</span>
+  <span class="nt">/&gt;&lt;/a&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"site-info"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;h1</span> <span class="na">class=</span><span class="s">"site-name"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"{{ site.baseurl }}/"</span><span class="nt">&gt;</span>{{ site.name }}<span class="nt">&lt;/a&gt;&lt;/h1&gt;</span>
+    <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"site-description"</span><span class="nt">&gt;</span>{{ site.description }}<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;nav&gt;</span>
+    <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"{{ site.baseurl }}/"</span><span class="nt">&gt;</span>Blog<span class="nt">&lt;/a&gt;</span>
+    <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"{{ site.baseurl }}/about"</span><span class="nt">&gt;</span>About<span class="nt">&lt;/a&gt;</span>
+  <span class="nt">&lt;/nav&gt;</span>
+<span class="nt">&lt;/header&gt;</span>
+</code></pre></div></div>
+
+<p>{{ … }} 로 둘러싸인 부분은 Liquid 라는 문법으로 쓰여진 것인데, 정적 페이지로 빌드할 때 jekyll이 해당 부분을 변환해준다. <strong>{{ site.name }}</strong> 의 부분은 _config.yml에서 설정했던 <strong>name</strong>에 해당하는 값으로 변환되는 것이다.
+다른 많은 부분들에서도 설정된 변수나 환경에 따라 변환되도록 코딩되어 있어서, 반복되는 작업을 하거나 외부적인 플러그인을 설치하여 쉽게 정적 페이지를 제공할 수 있게 해준다.</p>
+
+<p><a href="https://jekyllrb-ko.github.io/docs/home/">Jekyll 사용 설명서</a>를 통해서 필요한 기능들을 익혀가야 한다.</p>
+
+<hr />
+
+<h2 id="3-포스트-작성하기"><strong>3. 포스트 작성하기</strong></h2>
+
+<p>Jekyll에서 포스트는 <a href="https://daringfireball.net/projects/markdown/">마크다운</a>으로 작성한다. <strong>_post</strong>폴더에 YYYY-MM-DD-[제목].md 형식으로 파일을 저장하면 자동으로 포스트가 생성된다.</p>
+
+<p><strong>_posts</strong>에 <em>2019-10-21-Gibhub Pages + Jekyll Blog (1).md</em> 라는 파일을 생성하고 다음과 같이 코드를 추가하였다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---
+layout: post
+title: Github Pages + Jekyll 기반 블로그 만들기 (1)
+subtitle: Github Pages 호스팅 및 Jekyll 설치하기
+author: Hoontae
+categories: blog
+tags: blog jekyll
+# image: assets/images/1.jpg
+featured: true
+hidden: false
+permalink: '/:categories/:title'
+---
+
+--- Github Pages와 Jekyll을 이용해 블로그 만들기 ---
+</code></pre></div></div>
+
+<p>md파일을 추가하기만 해도 포스트가 생성된다. 블로그 폴더에 /_site/blog/[제목].html 파일이 생성된 것을 볼 수 있다. 설정마다 다르게 생성되는데, 지금은 md파일의 머리말에 permalink 속성으로 /:categories/:title 로 설정해두어 위와 같은 경로로 포스트 파일이 생성된 것이다.</p>
+
+<p>블로그에 접속해보면 해당 포스트가 생성된 것을 확인할 수 있다.</p>
+
+<p><img src="/img/posts/jekyll_github_blog/now-github-post.png" alt="Blog page updated" /></p>
+
+<p>몇가지 설정하는 부분은 아직 모르는 부분이 많지만, 마크다운 형식으로 파일을 작성하여 Github 저장소에 Push하기만 하면 쉽게 블로그에 글을 올릴 수 있게 되었다.</p>
+
+        <div class="post-bottom-margin"></div>
+         
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#blog"
+  title=""
+>
+  <span class="label">
+      blog
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#jekyll"
+  title=""
+>
+  <span class="label">
+      jekyll
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#github"
+  title=""
+>
+  <span class="label">
+      github
+  </span>
+  
+</span>
+ 
+        <div></div>
+         <div style="height: 30px;"></div>
+<div id="disqus_thread"></div>
+<script>
+  /**
+   *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+   *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+  (function () {
+    // DON'T EDIT BELOW THIS LINE
+    var d = document,
+      s = d.createElement("script");
+    s.src = "https://itsdone.disqus.com/embed.js";
+    s.setAttribute("data-timestamp", +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+ 
+
+        <div class="post-bottom-margin"></div>
+
+        <!-- <div class="clearfix">
+          
+          <a
+            class="btn btn-primary float-left"
+            href="/posts/1"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Github Pages + Jekyll 기반 블로그 만들기 (1)"
+            >&larr; Previous<span class="d-none d-md-inline"> Post</span></a
+          >
+           
+          <a
+            class="btn btn-primary float-right"
+            href="/posts/3"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Svelte로 만드는 TODO-App (1)"
+            >Next<span class="d-none d-md-inline"> Post</span> &rarr;</a
+          >
+          
+        </div> -->
+      </div>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:kadr8941@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/hoontae24">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; hoontae 2020</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/vendor/startbootstrap-clean-blog/js/clean-blog.min.js"></script>
+
+<script src="/assets/scripts.js"></script>
+<script src="/assets/js/post.js"></script>
+<script src="/assets/js/global.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151335869-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151335869-1');
+</script>
+
+
+  <div class="scrollToTopButton" onclick="_toTop()">
+  <i class="fas fa-arrow-up"></i>
+</div>
+
+<script>
+  const _toTop = () => {
+    const isHigh = window.scrollY > 2000
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: isHigh ? 'auto' : 'smooth',
+    })
+  }
+  onMount(() => {
+    const btn = document.querySelector('div.scrollToTopButton')
+    const showBtn = () => {
+      window.scrollY > 100
+        ? !btn.classList.contains('show') && btn.classList.add('show')
+        : btn.classList.contains('show') && btn.classList.remove('show')
+    }
+    showBtn()
+    window.addEventListener('scroll', showBtn)
+  })
+</script>
+
+<style>
+  .scrollToTopButton {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    right: 40px;
+    bottom: 40px;
+
+    cursor: pointer;
+    border: 1px solid #000000a2;
+    color: #000000a2;
+    background-color: #ffffff99;
+    border-radius: 50%;
+    overflow: hidden;
+    visibility: hidden;
+  }
+  .scrollToTopButton.show {
+    visibility: visible;
+  }
+  @media only screen and (max-width: 767px) {
+    .scrollToTopButton {
+      width: 30px;
+      height: 30px;
+      right: 20px;
+      bottom: 20px;
+    }
+  }
+</style>
+
+</body>
+</html>

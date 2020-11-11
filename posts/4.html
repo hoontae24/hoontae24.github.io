@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Svelte로 만드는 TODO-App (2) | 코드블로그_
+    
+  </title>
+  <meta name="description" content="지난 시간에 이어서 boards와 items 데이터를 Store를 만들어서 관리하고, CRUD를 구현하겠습니다.">
+  <!-- Begin Jekyll SEO tag v2.6.1 -->
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Svelte로 만드는 TODO-App (2)" />
+<meta name="author" content="Hoontae" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="지난 시간에 이어서 boards와 items 데이터를 Store를 만들어서 관리하고, CRUD를 구현하겠습니다." />
+<meta property="og:description" content="지난 시간에 이어서 boards와 items 데이터를 Store를 만들어서 관리하고, CRUD를 구현하겠습니다." />
+<link rel="canonical" href="https://hoontae24.github.io/posts/4" />
+<meta property="og:url" content="https://hoontae24.github.io/posts/4" />
+<meta property="og:site_name" content="코드블로그_" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-11-17T00:00:00+09:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hoontae24.github.io/posts/4"},"datePublished":"2019-11-17T00:00:00+09:00","url":"https://hoontae24.github.io/posts/4","author":{"@type":"Person","name":"Hoontae"},"headline":"Svelte로 만드는 TODO-App (2)","dateModified":"2019-11-17T00:00:00+09:00","description":"지난 시간에 이어서 boards와 items 데이터를 Store를 만들어서 관리하고, CRUD를 구현하겠습니다.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+  <link rel='stylesheet' href='//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.css'>
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/assets/vendor/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+
+  <link href="/img/ico/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon"/>
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://hoontae24.github.io/posts/4">
+  <link rel="alternate" type="application/rss+xml" title="코드블로그_" href="/feed.xml">
+
+</head>
+
+<script>
+  const listeners = []
+  const onMount = listener => listeners.push(listener)
+  window.addEventListener('load', () => {
+    listeners.forEach(listener => listener && listener())
+  })
+</script>
+
+<body>
+  <!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="position: fixed;" id="mainNav">
+  <div class="navbar-wrapper">
+    <a class="navbar-brand" href="/" >
+      코드블로그_
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav ml-auto">
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="/">HOME</a>
+      </li> -->
+      <li class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </li>
+      <!-- <li class="nav-item">
+          <a class="nav-link" href="/tags">TAGS</a>
+      </li> -->
+      <li class="nav-item">
+          <a class="nav-link" href="/archives">ARCHIVES</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="/about">ABOUT</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+  <!-- Page Header -->
+
+<header
+  class="masthead"
+  style="background-image: url('/img/posts/svelte/svelte_2.png')"
+>
+  
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-heading">
+            <h1>Svelte로 만드는 TODO-App (2)</h1>
+            
+            <h2 class="subheading">데이터 Store 구현하기 / 간단한 CRUD 구현하기</h2>
+            
+            <span class="meta">
+              <!-- >Posted by
+              <a href="/about"
+                >Hoontae</a
+              >
+              on  -->
+              2019.11.17 &middot; <span class="reading-time" title="Estimated read time">
+  
+   22 mins  read </span>
+
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container post">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto wrapper">
+        
+<div class="series wrapper">
+      
+
+  
+  
+  
+  <div class="title-wrapper">
+    <span class="series-label">SERIES</span> 
+    <span class="title">
+      Svelte TODO-APP Tutorials
+      <span class="count">2/3</span>
+    </span>
+    <button
+      class="btn btn-outline-secondary folded"
+      onclick="toggleFold()"
+    >
+      <i class="fas fa-chevron-down"></i>
+    </button>
+    <button
+      class="btn btn-outline-secondary unfolded"
+      onclick="toggleFold()"
+    >
+      <i class="fas fa-chevron-up"></i>
+    </button>
+  </div>
+
+  <!--  -->
+  <ol class="item-wrapper">
+         
+    <li class="post-title">
+      
+      <a class="text" href="/posts/3">
+        Svelte로 만드는 TODO-App (1) - Svelte 설치하기 / 컴포넌트 구성하기
+      </a>
+      
+    </li>
+      
+    <li class="post-title">
+      
+      <span class="current">
+        Svelte로 만드는 TODO-App (2) - 데이터 Store 구현하기 / 간단한 CRUD 구현하기
+      </span>
+      
+    </li>
+      
+    <li class="post-title">
+      
+      <a class="text" href="/posts/5">
+        Svelte로 만드는 TODO-App (3) - Item 순서 변경하기
+      </a>
+      
+    </li>
+                       
+  </ol>
+
+</div>
+
+
+<script>
+  const btnFolded = document.querySelector('.btn.folded')
+  const btnUnfolded = document.querySelector('.btn.unfolded')
+  btnFolded && btnFolded.classList.add('hidden')
+  btnUnfolded && btnUnfolded.classList.remove('hidden')  
+
+  function toggleFold () {
+    const btnFolded = document.querySelector('.btn.folded')
+    const btnUnfolded = document.querySelector('.btn.unfolded')
+    const titleWrapper = document.querySelector('.title-wrapper')
+    const itemWrapper = document.querySelector('.item-wrapper')
+    btnFolded.classList.toggle('hidden')
+    btnUnfolded.classList.toggle('hidden')
+    titleWrapper.classList.toggle('folded')
+    itemWrapper.classList.toggle('folded')
+  }
+</script>
+ <p>지난 시간에 이어서 <code class="highlighter-rouge">boards</code>와 <code class="highlighter-rouge">items</code> 데이터를 <code class="highlighter-rouge">Store</code>를 만들어서 관리하고, <code class="highlighter-rouge">CRUD</code>를 구현하겠습니다.</p>
+
+<h3 id="1-store-구현하기">1. Store 구현하기</h3>
+
+<p><code class="highlighter-rouge">Svelte</code>는 이미 <code class="highlighter-rouge">Store</code> 기능을 내장하고 있습니다. <code class="highlighter-rouge">svelte/store</code>를 <code class="highlighter-rouge">import</code>하면 그 기능을 사용할 수 있습니다.</p>
+
+<p>먼저 <code class="highlighter-rouge">Store</code>를 구현할 파일을 만들도록 하겠습니다. <code class="highlighter-rouge">/src</code>폴더 아래에 <code class="highlighter-rouge">stores</code>폴더를 만들고, <code class="highlighter-rouge">index.js</code>파일을 생성합니다.</p>
+
+<p>만약 <code class="highlighter-rouge">Store</code>로 사용할 데이터가 많다면 <code class="highlighter-rouge">/stores</code>폴더 안에 여러 파일을 만들어 구현하면 관리가 편하겠지만, 현재 프로젝트에서는 <code class="highlighter-rouge">boards</code>와 <code class="highlighter-rouge">items</code> 두 개의 데이터만 관리하면 되니, <code class="highlighter-rouge">index.js</code>파일 안에 함께 구현하도록 하겠습니다.</p>
+
+<p><code class="highlighter-rouge">Store</code>에 대한 기본 지식은 <a href="https://svelte.dev/docs#svelte_store">svelte/store 공식 API 문서</a>를 참조해주세요.</p>
+
+<h4 id="11-boards-데이터-store로-구현하기">1.1 boards 데이터 Store로 구현하기</h4>
+
+<p>이제 <code class="highlighter-rouge">/src/stores/index.js</code>파일을 다음과 같이 작성합니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/stores/index.js</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">writable</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">svelte/store</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">uuid</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">uuid/v4</span><span class="dl">'</span>
+
+<span class="kd">const</span> <span class="nx">_boards</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Planning</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">In Progress</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">All Done</span><span class="dl">'</span> <span class="p">},</span>
+<span class="p">]</span>
+
+<span class="kd">const</span> <span class="nx">createBoards</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">boards</span> <span class="o">=</span> <span class="nx">writable</span><span class="p">(</span><span class="nx">_boards</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">subscribe</span><span class="p">,</span> <span class="nx">reset</span><span class="p">,</span> <span class="na">update</span><span class="p">:</span> <span class="nx">_update</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">boards</span>
+
+  <span class="kd">const</span> <span class="nx">add</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">_update</span><span class="p">(</span><span class="nx">boards</span> <span class="o">=&gt;</span> <span class="nx">boards</span><span class="p">.</span><span class="nx">concat</span><span class="p">({</span> <span class="na">id</span><span class="p">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="na">title</span><span class="p">:</span> <span class="dl">''</span> <span class="p">}))</span>
+  <span class="p">}</span>
+
+  <span class="kd">const</span> <span class="nx">remove</span> <span class="o">=</span> <span class="nx">board</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">board</span><span class="p">)</span> <span class="k">return</span>
+    <span class="nx">_update</span><span class="p">(</span><span class="nx">boards</span> <span class="o">=&gt;</span> <span class="nx">boards</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">_board</span> <span class="o">=&gt;</span> <span class="nx">_board</span><span class="p">.</span><span class="nx">id</span> <span class="o">!==</span> <span class="nx">board</span><span class="p">.</span><span class="nx">id</span><span class="p">))</span>
+  <span class="p">}</span>
+
+  <span class="kd">const</span> <span class="nx">update</span> <span class="o">=</span> <span class="nx">board</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">board</span><span class="p">)</span> <span class="k">return</span>
+    <span class="nx">_update</span><span class="p">(</span><span class="nx">boards</span> <span class="o">=&gt;</span>
+      <span class="nx">boards</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">_board</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="nx">_board</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">board</span><span class="p">.</span><span class="nx">id</span> <span class="p">?</span> <span class="nx">board</span> <span class="p">:</span> <span class="nx">_board</span><span class="p">)),</span>
+    <span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="p">{</span> <span class="nx">subscribe</span><span class="p">,</span> <span class="nx">reset</span><span class="p">,</span> <span class="nx">add</span><span class="p">,</span> <span class="nx">remove</span><span class="p">,</span> <span class="nx">update</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">boards</span> <span class="o">=</span> <span class="nx">createBoards</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">Store 모듈</code>에서 불러온 <code class="highlighter-rouge">writable</code>함수의 파라미터로 초기화 할 <code class="highlighter-rouge">boards</code>데이터를 넣어줍니다.</p>
+
+<p>생성된 <code class="highlighter-rouge">Store</code>객체 <code class="highlighter-rouge">boards</code>에서 <code class="highlighter-rouge">update</code>메소드를 이용해 <code class="highlighter-rouge">add</code>, <code class="highlighter-rouge">remove</code>, <code class="highlighter-rouge">update</code> 함수를 구현합니다. (<code class="highlighter-rouge">update</code>라는 이름의 함수를 따로 구현하기 위해서 원래의 <code class="highlighter-rouge">update</code>메소드를 <code class="highlighter-rouge">_update</code>로 명명하였음.)</p>
+
+<p><code class="highlighter-rouge">createBoards</code>함수가 리턴하는 객체의 <code class="highlighter-rouge">add</code>, <code class="highlighter-rouge">remove</code>, <code class="highlighter-rouge">update</code>함수는 데이터를 다루는 데에 사용하기 위해 구현하였고, <code class="highlighter-rouge">subscribe</code>, <code class="highlighter-rouge">reset</code>함수는 컴포넌트 내에서 <code class="highlighter-rouge">$boards</code>로 접근하기 위해서 함께 넘겨줍니다.</p>
+
+<p><code class="highlighter-rouge">add</code>함수에서 <code class="highlighter-rouge">board</code>를 생성하려고 할 때 id가 필요한데, 중복되지 않는 값이 필요하므로 <code class="highlighter-rouge">uuid</code>를 사용하도록 하겠습니다. 상단에서 <code class="highlighter-rouge">uuid</code>를 import 하고, 콘솔로 가서 모듈을 설치하겠습니다.</p>
+
+<blockquote>
+  <p>$ npm install uuid</p>
+</blockquote>
+
+<p><code class="highlighter-rouge">package.json</code>파일을 열어보면, 다음과 같이 모듈이 의존성에 추가된 것을 볼 수 있습니다.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">//</span><span class="w"> </span><span class="err">package.json</span><span class="w">
+</span><span class="nl">"dependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"sirv-cli"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.4.4"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^3.3.3"</span><span class="w">
+  </span><span class="p">}</span><span class="err">,</span><span class="w">
+</span></code></pre></div></div>
+
+<p>다음은 <code class="highlighter-rouge">App.svelte</code>파일로 가서 만들어둔 <code class="highlighter-rouge">boards</code>를 불러오겠습니다.</p>
+
+<p><code class="highlighter-rouge">./stores</code>에서 <code class="highlighter-rouge">boards</code>를 import하고, 기존에 사용하던 boards배열 데이터는 삭제하겠습니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- App.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">import</span> <span class="p">{</span> <span class="nx">boards</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./stores</span><span class="dl">'</span>
+
+  <span class="c1">// 기존의 데이터는 삭제</span>
+  <span class="c1">// const boards = [</span>
+  <span class="c1">//   { id: 1, title: 'Planning' },</span>
+  <span class="c1">//   { id: 2, title: 'In Progress' },</span>
+  <span class="c1">//   { id: 3, title: 'All Done' },</span>
+  <span class="c1">// ]</span>
+
+  <span class="c1">// (... 생략 ...)</span>
+<span class="nt">&lt;/script&gt;</span>
+
+<span class="c">&lt;!-- 기존의 boards를 $boards로 바꿔줍니다. --&gt;</span>
+<span class="c">&lt;!-- {#each boards as board (board.id)} --&gt;</span>
+{#each $boards as board (board.id)}
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"item"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;Board</span> <span class="na">board=</span><span class="s">{board}</span> <span class="na">items=</span><span class="s">{items.filter(item</span> <span class="err">=</span><span class="nt">&gt;</span> item.boardId === board.id)}
+  /&gt;
+<span class="nt">&lt;/div&gt;</span>
+{/each}
+
+<span class="c">&lt;!-- (... 생략 ...) --&gt;</span>
+</code></pre></div></div>
+
+<p>앞서 말했던 것 처럼, <code class="highlighter-rouge">boards</code>자체는 <code class="highlighter-rouge">Store</code>객체이기 때문에, 해당하는 데이터에 접근하려면 <code class="highlighter-rouge">$</code>를 앞에 붙여야 합니다.</p>
+
+<p>이제 페이지로 접속해서 여전히 잘 동작하는지 확인해보세요. <code class="highlighter-rouge">Store</code>가 잘 생성되었는지 확인하기 위해서 <code class="highlighter-rouge">boards</code>의 기본 데이터를 변경해보고, 반영되는지 확인하면 됩니다.</p>
+
+<h4 id="12-items-데이터-store로-구현하기">1.2 items 데이터 Store로 구현하기</h4>
+
+<p>다음은 <code class="highlighter-rouge">items</code>데이터를 <code class="highlighter-rouge">Store</code>로 구현하겠습니다. <code class="highlighter-rouge">boards</code>에서 했던 것과 거의 동일합니다.</p>
+
+<p><code class="highlighter-rouge">stores/index.js</code>파일로 가서 아래의 내용을 추가하겠습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// stores/index.js</span>
+<span class="kd">const</span> <span class="nx">_items</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">boardId</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">자료 조사하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="na">boardId</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">교양책 읽기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="na">boardId</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">분리수거하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="na">boardId</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">가계부 정리하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="na">boardId</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">버그 수정하기</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">},</span>
+<span class="p">]</span>
+
+<span class="kd">const</span> <span class="nx">createItems</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">items</span> <span class="o">=</span> <span class="nx">writable</span><span class="p">(</span><span class="nx">_items</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">subscribe</span><span class="p">,</span> <span class="nx">reset</span><span class="p">,</span> <span class="na">update</span><span class="p">:</span> <span class="nx">_update</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">items</span>
+
+  <span class="kd">const</span> <span class="nx">add</span> <span class="o">=</span> <span class="nx">boardId</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">boardId</span><span class="p">)</span> <span class="k">return</span>
+    <span class="nx">_update</span><span class="p">(</span><span class="nx">items</span> <span class="o">=&gt;</span>
+      <span class="nx">items</span><span class="p">.</span><span class="nx">concat</span><span class="p">({</span> <span class="na">id</span><span class="p">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="nx">boardId</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">''</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}),</span>
+    <span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="kd">const</span> <span class="nx">remove</span> <span class="o">=</span> <span class="nx">item</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">item</span><span class="p">)</span> <span class="k">return</span>
+    <span class="nx">_update</span><span class="p">(</span><span class="nx">items</span> <span class="o">=&gt;</span> <span class="nx">items</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">_item</span> <span class="o">=&gt;</span> <span class="nx">_item</span><span class="p">.</span><span class="nx">id</span> <span class="o">!==</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">))</span>
+  <span class="p">}</span>
+
+  <span class="kd">const</span> <span class="nx">update</span> <span class="o">=</span> <span class="nx">item</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">item</span><span class="p">)</span> <span class="k">return</span>
+    <span class="nx">_update</span><span class="p">(</span><span class="nx">items</span> <span class="o">=&gt;</span> <span class="nx">items</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">_item</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="nx">_item</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">item</span><span class="p">.</span><span class="nx">id</span> <span class="p">?</span> <span class="nx">item</span> <span class="p">:</span> <span class="nx">_item</span><span class="p">)))</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="p">{</span> <span class="nx">subscribe</span><span class="p">,</span> <span class="nx">reset</span><span class="p">,</span> <span class="nx">add</span><span class="p">,</span> <span class="nx">remove</span><span class="p">,</span> <span class="nx">update</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">items</span> <span class="o">=</span> <span class="nx">createItems</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">boards</code>와 다른 부분은 <code class="highlighter-rouge">add</code>함수에서 <code class="highlighter-rouge">item</code>을 생성할 때, 어느 <code class="highlighter-rouge">board</code>에 소속해야할 지 알기 위해 <code class="highlighter-rouge">boardId</code>를 파라미터로 받는 부분입니다. 나머지는 동일합니다.</p>
+
+<p>이제 <code class="highlighter-rouge">App.svelte</code>파일로 가서 <code class="highlighter-rouge">items</code>를 삭제합니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- App.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="c1">// 기존 데이터 삭제</span>
+  <span class="c1">// const items = [</span>
+  <span class="c1">//   { id: 1, boardId: 1, title: '자료 조사하기', done: false},</span>
+  <span class="c1">//   { id: 2, boardId: 1, title: '교양책 읽기', done: false},</span>
+  <span class="c1">//   { id: 3, boardId: 2, title: '분리수거하기', done: false},</span>
+  <span class="c1">//   { id: 4, boardId: 2, title: '가계부 정리하기', done: false},</span>
+  <span class="c1">//   { id: 5, boardId: 3, title: '버그 수정하기', done: false},</span>
+  <span class="c1">// ]</span>
+<span class="nt">&lt;/script&gt;</span>
+
+<span class="c">&lt;!-- Board에 주입해주었던 items를 삭제합니다 --&gt;</span>
+<span class="nt">&lt;Board</span> <span class="na">board=</span><span class="s">{board}</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">Board.svelte</code>로 가서 <code class="highlighter-rouge">Store</code>의 <code class="highlighter-rouge">items</code>를 <code class="highlighter-rouge">import</code>하고, <code class="highlighter-rouge">$items</code>로 접근하여 해당 <code class="highlighter-rouge">board</code>에 연결된 <code class="highlighter-rouge">items</code>를 불러오게 <code class="highlighter-rouge">filter</code>를 걸어줍니다. (원래 <code class="highlighter-rouge">Board.svelte</code>에 있던 부분을 옮겼습니다.)</p>
+
+<p><code class="highlighter-rouge">$</code>를 이용해 <code class="highlighter-rouge">_items</code>에 반응성 변수를 만들고 해당 <code class="highlighter-rouge">board</code>의 <code class="highlighter-rouge">items</code>를 접근합니다.</p>
+
+<p>기존에 <code class="highlighter-rouge">items</code>로 접근했던 부분을 <code class="highlighter-rouge">_items</code>로 변경해주세요.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Board.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">import</span> <span class="p">{</span> <span class="nx">items</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../stores</span><span class="dl">'</span>
+
+  <span class="c1">// 기존에 props로 주입되었던 items는 삭제합니다.</span>
+  <span class="c1">// export items = []</span>
+  <span class="nx">$</span><span class="p">:</span> <span class="nx">_items</span> <span class="o">=</span> <span class="nx">$items</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="nx">item</span><span class="p">.</span><span class="nx">boardId</span> <span class="o">===</span> <span class="nx">board</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+<span class="nt">&lt;/script&gt;</span>
+<span class="c">&lt;!-- "items" -&gt; "_items" --&gt;</span>
+{#each _items as item (item.id)}
+<span class="nt">&lt;Item</span> <span class="err">{</span><span class="na">item</span><span class="err">}</span> <span class="nt">/&gt;</span>
+{/each}
+</code></pre></div></div>
+
+<p>페이지로 가서 잘 동작하는지 확인해보세요.</p>
+
+<p><strong>Todo-app</strong>에서 사용할 <code class="highlighter-rouge">boards</code>와 <code class="highlighter-rouge">items</code>데이터를 <code class="highlighter-rouge">Store</code>로 구현해 보았습니다. 페이지는 변한 것 없이 그대로지만, 데이터를 관리하는 부분은 수월해졌습니다. 만약 <code class="highlighter-rouge">Store</code>를 이용하지 않으려면, 자식 컴포넌트로 <a href="https://svelte.dev/docs#createEventDispatcher">이벤트</a>를 전달해서 데이터를 변경하거나, <a href="https://svelte.dev/docs#bind_component_property">bind된 속성</a>을 이용하면 됩니다.</p>
+
+<hr />
+
+<h3 id="2-item-crud-구현하기">2. Item CRUD 구현하기</h3>
+
+<blockquote>
+  <p><strong>CRUD</strong>는 <em>대부분의 컴퓨터 소프트웨어가 가지는 기본적인 데이터 처리 기능인 Create(생성), Read(읽기), Update(갱신), Delete(삭제)를 묶어서 일컫는 말이다.</em> (참조. 위키백과)</p>
+</blockquote>
+
+<p><strong>Item</strong>의 동작은 <strong>추가(C)</strong>, <strong>읽기(R)</strong>, <strong>변경(U)</strong>, <strong>삭제(D)</strong> 정도가 있습니다. <strong>읽기</strong>는 따로 구현할 것 없이 지금처럼 보이기만 하면 됩니다.</p>
+
+<p><strong>추가</strong>와 <strong>삭제</strong>는 버튼을 통해 단순하게 동작하도록 먼저 만들고, <strong>변경</strong>은 <strong>Item</strong>의 제목을 변경하고, <strong>done</strong>속성을 이용하여 완료 체크를 할 수 있도록 만들어 보겠습니다.</p>
+
+<h4 id="21-item-추가-기능-구현하기">2.1 Item 추가 기능 구현하기</h4>
+
+<p><code class="highlighter-rouge">Item</code>을 추가하는 방법은 여러가지로 구현할 수 있겠지만, 각 <code class="highlighter-rouge">Board</code>에 있는 <code class="highlighter-rouge">추가</code>버튼을 클릭하면 해당 <code class="highlighter-rouge">Board</code>에 새로운 <code class="highlighter-rouge">Item</code>이 추가되도록 구현해 보겠습니다.</p>
+
+<p>먼저, <code class="highlighter-rouge">Board</code>의 우측 하단에 버튼을 하나 만들겠습니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Board.svelte --&gt;</span>
+<span class="c">&lt;!-- card-body안쪽의 마지막 부분에 버튼을 추가합니다. --&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card-action"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"add-item"</span><span class="nt">&gt;</span>+<span class="nt">&lt;/button&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+
+<span class="nt">&lt;style&gt;</span>
+  <span class="c">/* 간단한 스타일을 지정합니다. */</span>
+  <span class="nc">.add-item</span> <span class="p">{</span>
+    <span class="nl">float</span><span class="p">:</span> <span class="nb">right</span><span class="p">;</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">35px</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">35px</span><span class="p">;</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+
+<p>버튼을 클릭하면 새로운 <code class="highlighter-rouge">Item</code>이 추가되도록 하겠습니다. <code class="highlighter-rouge">Board.svelte</code> 파일에 <code class="highlighter-rouge">handleAddItem</code>함수를 만들고 방금 생성한 버튼에 연결시켜줍니다. <code class="highlighter-rouge">handleAddItem</code>함수는 <code class="highlighter-rouge">items.add</code>를 호출하도록 구현하겠습니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Board.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">import</span> <span class="nx">Item</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Item.svelte</span><span class="dl">'</span>
+  <span class="k">import</span> <span class="p">{</span> <span class="nx">items</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../stores</span><span class="dl">'</span>
+
+  <span class="k">export</span> <span class="kd">let</span> <span class="nx">board</span> <span class="o">=</span> <span class="kc">null</span>
+  <span class="nx">$</span><span class="p">:</span> <span class="nx">_items</span> <span class="o">=</span> <span class="nx">$items</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="nx">item</span><span class="p">.</span><span class="nx">boardId</span> <span class="o">===</span> <span class="nx">board</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+
+  <span class="c1">// handleAddItem 함수 구현</span>
+  <span class="kd">const</span> <span class="nx">handleAddItem</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">items</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">board</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+<span class="nt">&lt;/script&gt;</span>
+
+<span class="c">&lt;!-- ...생략... --&gt;</span>
+
+<span class="c">&lt;!-- button의 onclick 이벤트에 handleAddItem함수를 연결합니다. --&gt;</span>
+<span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"add-item"</span> <span class="na">on:click=</span><span class="s">{handleAddItem}</span><span class="nt">&gt;</span>+<span class="nt">&lt;/button&gt;</span>
+</code></pre></div></div>
+
+<p>이제 버튼을 클릭해 보겠습니다.</p>
+
+<p><img src="/img/posts/svelte/svelte_addItem_1.png" alt="add item" /></p>
+
+<p><code class="highlighter-rouge">Item</code>을 추가하는 부분에 <code class="highlighter-rouge">title</code>을 지정해주지 않아서 제대로 나오지 않습니다.</p>
+
+<p><code class="highlighter-rouge">stores/index.js</code>로 가서 해당 부분을 고쳐주겠습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// stores/index.js</span>
+<span class="kd">const</span> <span class="nx">add</span> <span class="o">=</span> <span class="nx">boardId</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">boardId</span><span class="p">)</span> <span class="k">return</span>
+  <span class="nx">_update</span><span class="p">(</span><span class="nx">items</span> <span class="o">=&gt;</span>
+    <span class="nx">items</span><span class="p">.</span><span class="nx">concat</span><span class="p">({</span> <span class="na">id</span><span class="p">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="nx">boardId</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">새 항목</span><span class="dl">'</span><span class="p">,</span> <span class="na">done</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}),</span>
+  <span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>변경 후 다시 버튼을 클릭해보면 <strong>“새 항목”</strong> 이라는 제목으로 잘 추가됩니다.</p>
+
+<h4 id="22-item-삭제-기능-구현하기">2.2 Item 삭제 기능 구현하기</h4>
+
+<p>먼저 <code class="highlighter-rouge">Item.svelte</code>컴포넌트에 삭제 버튼을 만들겠습니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Item.svelte --&gt;</span>
+<span class="nt">&lt;div</span>
+  <span class="na">class=</span><span class="s">"item card p-1 mb-2 shadow-sm"</span>
+  <span class="na">class:shadow=</span><span class="s">{hovering}</span>
+  <span class="na">on:mouseenter=</span><span class="s">{()</span> <span class="err">=</span><span class="nt">&gt;</span> hovering = true}
+  on:mouseleave={() =&gt; hovering = false}
+&gt;
+  <span class="nt">&lt;span&gt;</span>
+    {item.title}
+  <span class="nt">&lt;/span&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"item-action"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"item-btn"</span><span class="nt">&gt;</span>-<span class="nt">&lt;/button&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+
+<span class="nt">&lt;style&gt;</span>
+  <span class="nc">.item</span> <span class="p">{</span>
+    <span class="nl">transition</span><span class="p">:</span> <span class="n">box-shadow</span> <span class="m">.25s</span> <span class="n">ease-in</span><span class="p">;</span>
+    <span class="nl">flex-direction</span><span class="p">:</span> <span class="n">row</span><span class="p">;</span>
+    <span class="nl">justify-content</span><span class="p">:</span> <span class="n">space-between</span>
+  <span class="p">}</span>
+
+  <span class="nc">.item-btn</span> <span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">25px</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">25px</span><span class="p">;</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+
+<p>아직 버튼은 아무 동작이 없습니다. 이제 <code class="highlighter-rouge">handleRemoveItem</code>함수를 만들고 이벤트로 전달해주겠습니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Item.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">import</span> <span class="p">{</span> <span class="nx">createEventDispatcher</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">svelte</span><span class="dl">'</span>
+  <span class="kd">const</span> <span class="nx">dispatch</span> <span class="o">=</span> <span class="nx">createEventDispatcher</span><span class="p">()</span>
+
+  <span class="k">export</span> <span class="kd">let</span> <span class="nx">item</span> <span class="o">=</span> <span class="kc">null</span>
+  <span class="kd">let</span> <span class="nx">hovering</span> <span class="o">=</span> <span class="kc">false</span>
+
+  <span class="kd">const</span> <span class="nx">handleRemoveItem</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">dispatch</span><span class="p">(</span><span class="dl">'</span><span class="s1">remove</span><span class="dl">'</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span>
+<span class="nt">&lt;/script&gt;</span>
+
+<span class="c">&lt;!-- ...생략... --&gt;</span>
+<span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"item-btn"</span> <span class="na">on:click=</span><span class="s">{handleRemoveItem}</span><span class="nt">&gt;</span>-<span class="nt">&lt;/button&gt;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">"remove"</code>로 전달한 이벤트를 리스너를 <code class="highlighter-rouge">Board.svelte</code>에 연결해주겠습니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Board.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">import</span> <span class="nx">Item</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./Item.svelte</span><span class="dl">'</span>
+  <span class="k">import</span> <span class="p">{</span> <span class="nx">items</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../stores</span><span class="dl">'</span>
+
+  <span class="k">export</span> <span class="kd">let</span> <span class="nx">board</span> <span class="o">=</span> <span class="kc">null</span>
+  <span class="nx">$</span><span class="p">:</span> <span class="nx">_items</span> <span class="o">=</span> <span class="nx">$items</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="nx">item</span><span class="p">.</span><span class="nx">boardId</span> <span class="o">===</span> <span class="nx">board</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+
+  <span class="kd">const</span> <span class="nx">handleAddItem</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">items</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">board</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+  <span class="c1">// e 객체의 detail에 dispatch 함수의 두번째 인자가 담겨 전달됩니다.</span>
+  <span class="kd">const</span> <span class="nx">handleRemoveItem</span> <span class="o">=</span> <span class="nx">e</span> <span class="o">=&gt;</span> <span class="nx">items</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">detail</span><span class="p">)</span>
+<span class="nt">&lt;/script&gt;</span>
+
+<span class="c">&lt;!-- ...생략... --&gt;</span>
+{#each _items as item (item.id)}
+<span class="c">&lt;!-- 하위 컴포넌트에서 remove로 넘겨준 이벤트를 on:remove 으로 받아줍니다. --&gt;</span>
+<span class="nt">&lt;Item</span> <span class="err">{</span><span class="na">item</span><span class="err">}</span> <span class="na">on:remove=</span><span class="s">{handleRemoveItem}</span> <span class="nt">/&gt;</span>
+{/each}
+</code></pre></div></div>
+
+<p>잘 동작하네요.</p>
+
+<p><img src="/img/posts/svelte/svelte_remove_item_1.gif" alt="remove item" /></p>
+
+<h4 id="23-item-편집-기능-구현하기">2.3 Item 편집 기능 구현하기</h4>
+
+<p><code class="highlighter-rouge">Item</code>의 편집은 제목을 수정하고, 완료 체크를 할 수 있도록 구현해보겠습니다.</p>
+
+<p>수정 버튼을 만들어서, 버튼을 클릭하면 제목이 <code class="highlighter-rouge">input</code>으로 변하는 동작을 구현하고, 제목을 수정하도록 만들어 보겠습니다.</p>
+
+<p>삭제 버튼 옆에 수정 버튼을 만들어 줍니다. 그리고 수정버튼을 클릭하면 변하는 상태 변수 <code class="highlighter-rouge">isEditable</code>과 핸들러 <code class="highlighter-rouge">handleToggleEditable</code>을 만들어 줍니다. 수정 버튼에는 핸들러를 연결해 줄 것입니다.</p>
+
+<p>그리고 <code class="highlighter-rouge">isEditable</code>의 상태에 따라 <code class="highlighter-rouge">Item</code>의 제목이 <code class="highlighter-rouge">input</code>이 되도록 구현해 줍니다.</p>
+
+<p><code class="highlighter-rouge">Item.svelte</code> 파일을 다음과 같이 수정합니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Item.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">import</span> <span class="p">{</span> <span class="nx">createEventDispatcher</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">svelte</span><span class="dl">'</span>
+  <span class="kd">const</span> <span class="nx">dispatch</span> <span class="o">=</span> <span class="nx">createEventDispatcher</span><span class="p">()</span>
+
+  <span class="k">export</span> <span class="kd">let</span> <span class="nx">item</span> <span class="o">=</span> <span class="kc">null</span>
+  <span class="kd">let</span> <span class="nx">hovering</span> <span class="o">=</span> <span class="kc">false</span>
+  <span class="kd">let</span> <span class="nx">isEditable</span> <span class="o">=</span> <span class="kc">false</span>
+
+  <span class="kd">const</span> <span class="nx">handleRemoveItem</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">dispatch</span><span class="p">(</span><span class="dl">'</span><span class="s1">remove</span><span class="dl">'</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">handleToggleEditable</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="nx">isEditable</span> <span class="o">=</span> <span class="o">!</span><span class="nx">isEditable</span><span class="p">)</span>
+<span class="nt">&lt;/script&gt;</span>
+
+{#if item}
+<span class="nt">&lt;div</span>
+  <span class="na">class=</span><span class="s">"item card p-1 mb-2 shadow-sm"</span>
+  <span class="na">class:shadow=</span><span class="s">{hovering}</span>
+  <span class="na">on:mouseenter=</span><span class="s">{()</span> <span class="err">=</span><span class="nt">&gt;</span> hovering = true}
+  on:mouseleave={() =&gt; hovering = false}
+&gt;
+  {#if isEditable}
+  <span class="nt">&lt;input</span> <span class="na">bind:value=</span><span class="s">{item.title}</span> <span class="nt">/&gt;</span>
+  {:else}
+  <span class="nt">&lt;span&gt;</span>
+    {item.title}
+  <span class="nt">&lt;/span&gt;</span>
+  {/if}
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"item-action"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"item-btn"</span> <span class="na">on:click=</span><span class="s">{handleToggleEditable}</span><span class="nt">&gt;</span>E<span class="nt">&lt;/button&gt;</span>
+    <span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"item-btn"</span> <span class="na">on:click=</span><span class="s">{handleRemoveItem}</span><span class="nt">&gt;</span>-<span class="nt">&lt;/button&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+{/if}
+</code></pre></div></div>
+
+<p>제목을 수정할 수 있도록 UI는 구성했으니, 수정된 제목이 <code class="highlighter-rouge">Store</code>에 반영되도록 해줍니다.</p>
+
+<p><code class="highlighter-rouge">isEditable</code>이 <code class="highlighter-rouge">true</code>에서 <code class="highlighter-rouge">false</code>로 변할 때, 즉 수정을 완료하고 <code class="highlighter-rouge">submit</code>할 때 값을 저장하도록 구현해 주겠습니다.</p>
+
+<p><code class="highlighter-rouge">handleUpdateItem</code> 함수를 만들어주고, <code class="highlighter-rouge">handleToggleEditable</code> 함수에서 <code class="highlighter-rouge">isEditable</code>이 변할 때, 실행되도록 구현해 보겠습니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Item.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="k">import</span> <span class="p">{</span> <span class="nx">createEventDispatcher</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">svelte</span><span class="dl">'</span>
+  <span class="kd">const</span> <span class="nx">dispatch</span> <span class="o">=</span> <span class="nx">createEventDispatcher</span><span class="p">()</span>
+
+  <span class="k">export</span> <span class="kd">let</span> <span class="nx">item</span> <span class="o">=</span> <span class="kc">null</span>
+  <span class="kd">let</span> <span class="nx">hovering</span> <span class="o">=</span> <span class="kc">false</span>
+  <span class="kd">let</span> <span class="nx">isEditable</span> <span class="o">=</span> <span class="kc">false</span>
+
+  <span class="kd">const</span> <span class="nx">handleRemoveItem</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">dispatch</span><span class="p">(</span><span class="dl">'</span><span class="s1">remove</span><span class="dl">'</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">handleUpdateItem</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">dispatch</span><span class="p">(</span><span class="dl">'</span><span class="s1">update</span><span class="dl">'</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">handleToggleEditable</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">isEditable</span> <span class="o">=</span> <span class="o">!</span><span class="nx">isEditable</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isEditable</span><span class="p">)</span> <span class="nx">handleUpdateItem</span><span class="p">()</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">handleUpdateItem</code> 함수에서는 상위 컴포넌트로 이벤트를 발생시키게 하였습니다. <code class="highlighter-rouge">Board.svelte</code> 파일로 가서 해당 이벤트를 연결시켜 줍니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Board.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="kd">const</span> <span class="nx">handleUpdateItem</span> <span class="o">=</span> <span class="nx">e</span> <span class="o">=&gt;</span> <span class="nx">items</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">detail</span><span class="p">)</span>
+<span class="nt">&lt;/script&gt;</span>
+
+{#each _items as item (item.id)}
+<span class="nt">&lt;Item</span> <span class="err">{</span><span class="na">item</span><span class="err">}</span> <span class="na">on:update=</span><span class="s">{handleUpdateItem}</span> <span class="na">on:remove=</span><span class="s">{handleRemoveItem}</span> <span class="nt">/&gt;</span>
+{/each}
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">Board.svelte</code> 컴포넌트에서 <code class="highlighter-rouge">on:update</code>로 해당 이벤트의 콜백을 연결해주고, <code class="highlighter-rouge">store</code>에 구현해둔 <code class="highlighter-rouge">update</code>를 호출합니다.</p>
+
+<p><img src="/img/posts/svelte/svelte_update_item.gif" alt="remove item" /></p>
+
+<p>실제로 좋은 UX를 제공하려면, <code class="highlighter-rouge">Enter</code>키를 입력하거나 <code class="highlighter-rouge">input</code>에서 <code class="highlighter-rouge">blur</code>처리가 될 때, 상태를 변경시켜줘야 하겠지만, 그 작업은 생략하도록 하겠습니다.</p>
+
+<p>이제 <code class="highlighter-rouge">Item</code>의 완료처리를 구현해보겠습니다. 완료처리는 간단하게 제목을 클릭하면 제목에 실선이 그어지고, 색이 변하도록 만들겠습니다.</p>
+
+<p><code class="highlighter-rouge">Item.svelte</code>파일에서 다음과 같이 수정합니다.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- Item.svelte --&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+  <span class="kd">const</span> <span class="nx">handleToggleDone</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">item</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="o">!</span><span class="nx">item</span><span class="p">.</span><span class="nx">done</span>
+    <span class="nx">handleUpdateItem</span><span class="p">()</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/script&gt;</span>
+
+<span class="nt">&lt;span</span> <span class="na">class:item-done=</span><span class="s">{item.done}</span> <span class="na">on:click=</span><span class="s">{handleToggleDone}</span><span class="nt">&gt;</span>
+  {item.title}
+<span class="nt">&lt;/span&gt;</span>
+
+<span class="nt">&lt;style&gt;</span>
+  <span class="nc">.item-done</span> <span class="p">{</span>
+    <span class="nl">text-decoration</span><span class="p">:</span> <span class="nb">line-through</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span> <span class="no">gray</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">item</code>의 제목이 표시되는 엘리먼트를 클릭했을 때, <code class="highlighter-rouge">item.done</code>의 값이 변경되도록 해주고, <code class="highlighter-rouge">store</code>에 반영시켜줍니다. <code class="highlighter-rouge">item.done</code>의 값에 따라 <code class="highlighter-rouge">item-done</code>클래스를 가지도록 해주고, css로 실선과 색이 변하도록 해줍니다.</p>
+
+<hr />
+
+<p>이렇게 <strong>Item</strong>의 간단한 CRUD를 구현해 보았습니다. <strong>svelte</strong>로 기본적인 동작들을 만들면서 알아야 할 것들을 자연스럽게 사용해 볼 수 있었습니다.</p>
+
+<p>다음 시간에는 각 <code class="highlighter-rouge">Item</code>들의 순서를 변경하고, 다른 <code class="highlighter-rouge">Board</code>로 이동시키는 동작을 구현해보겠습니다.</p>
+
+<p><em>전체 프로젝트 코드는 <a href="https://github.com/hoontae24/hello-svelte">Github</a>에서 보실 수 있습니다.</em></p>
+
+        <div class="post-bottom-margin"></div>
+         
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#javascript"
+  title=""
+>
+  <span class="label">
+      javascript
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#frontend"
+  title=""
+>
+  <span class="label">
+      frontend
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#svelte"
+  title=""
+>
+  <span class="label">
+      svelte
+  </span>
+  
+</span>
+ 
+        <div></div>
+         <div style="height: 30px;"></div>
+<div id="disqus_thread"></div>
+<script>
+  /**
+   *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+   *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+  (function () {
+    // DON'T EDIT BELOW THIS LINE
+    var d = document,
+      s = d.createElement("script");
+    s.src = "https://itsdone.disqus.com/embed.js";
+    s.setAttribute("data-timestamp", +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+ 
+
+        <div class="post-bottom-margin"></div>
+
+        <!-- <div class="clearfix">
+          
+          <a
+            class="btn btn-primary float-left"
+            href="/posts/3"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Svelte로 만드는 TODO-App (1)"
+            >&larr; Previous<span class="d-none d-md-inline"> Post</span></a
+          >
+           
+          <a
+            class="btn btn-primary float-right"
+            href="/posts/5"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Svelte로 만드는 TODO-App (3)"
+            >Next<span class="d-none d-md-inline"> Post</span> &rarr;</a
+          >
+          
+        </div> -->
+      </div>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:kadr8941@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/hoontae24">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; hoontae 2020</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/vendor/startbootstrap-clean-blog/js/clean-blog.min.js"></script>
+
+<script src="/assets/scripts.js"></script>
+<script src="/assets/js/post.js"></script>
+<script src="/assets/js/global.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151335869-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151335869-1');
+</script>
+
+
+  <div class="scrollToTopButton" onclick="_toTop()">
+  <i class="fas fa-arrow-up"></i>
+</div>
+
+<script>
+  const _toTop = () => {
+    const isHigh = window.scrollY > 2000
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: isHigh ? 'auto' : 'smooth',
+    })
+  }
+  onMount(() => {
+    const btn = document.querySelector('div.scrollToTopButton')
+    const showBtn = () => {
+      window.scrollY > 100
+        ? !btn.classList.contains('show') && btn.classList.add('show')
+        : btn.classList.contains('show') && btn.classList.remove('show')
+    }
+    showBtn()
+    window.addEventListener('scroll', showBtn)
+  })
+</script>
+
+<style>
+  .scrollToTopButton {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    right: 40px;
+    bottom: 40px;
+
+    cursor: pointer;
+    border: 1px solid #000000a2;
+    color: #000000a2;
+    background-color: #ffffff99;
+    border-radius: 50%;
+    overflow: hidden;
+    visibility: hidden;
+  }
+  .scrollToTopButton.show {
+    visibility: visible;
+  }
+  @media only screen and (max-width: 767px) {
+    .scrollToTopButton {
+      width: 30px;
+      height: 30px;
+      right: 20px;
+      bottom: 20px;
+    }
+  }
+</style>
+
+</body>
+</html>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Mobx의 상태 변화, Action을 알아보자(feat. 비동기 Action) | 코드블로그_
+    
+  </title>
+  <meta name="description" content="Mobx는 리액트에서 사용되어지는 상태 관리 라이브러리입니다. 리액트 자체적으로 state나 useState를 이용해서 상태 관리를 할 수 있지만, 전역적인 상태나 반응적인 변화를 위해서 Mobx와 같은 외부 라이브러리를 사용하기도 합니다.">
+  <!-- Begin Jekyll SEO tag v2.6.1 -->
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Mobx의 상태 변화, Action을 알아보자(feat. 비동기 Action)" />
+<meta name="author" content="Hoontae" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Mobx는 리액트에서 사용되어지는 상태 관리 라이브러리입니다. 리액트 자체적으로 state나 useState를 이용해서 상태 관리를 할 수 있지만, 전역적인 상태나 반응적인 변화를 위해서 Mobx와 같은 외부 라이브러리를 사용하기도 합니다." />
+<meta property="og:description" content="Mobx는 리액트에서 사용되어지는 상태 관리 라이브러리입니다. 리액트 자체적으로 state나 useState를 이용해서 상태 관리를 할 수 있지만, 전역적인 상태나 반응적인 변화를 위해서 Mobx와 같은 외부 라이브러리를 사용하기도 합니다." />
+<link rel="canonical" href="https://hoontae24.github.io/posts/8" />
+<meta property="og:url" content="https://hoontae24.github.io/posts/8" />
+<meta property="og:site_name" content="코드블로그_" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-01-30T00:00:00+09:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://hoontae24.github.io/posts/8"},"datePublished":"2020-01-30T00:00:00+09:00","url":"https://hoontae24.github.io/posts/8","author":{"@type":"Person","name":"Hoontae"},"headline":"Mobx의 상태 변화, Action을 알아보자(feat. 비동기 Action)","dateModified":"2020-01-30T00:00:00+09:00","description":"Mobx는 리액트에서 사용되어지는 상태 관리 라이브러리입니다. 리액트 자체적으로 state나 useState를 이용해서 상태 관리를 할 수 있지만, 전역적인 상태나 반응적인 변화를 위해서 Mobx와 같은 외부 라이브러리를 사용하기도 합니다.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+  <link rel='stylesheet' href='//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.css'>
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="/assets/vendor/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+
+  <link href="/img/ico/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon"/>
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="https://hoontae24.github.io/posts/8">
+  <link rel="alternate" type="application/rss+xml" title="코드블로그_" href="/feed.xml">
+
+</head>
+
+<script>
+  const listeners = []
+  const onMount = listener => listeners.push(listener)
+  window.addEventListener('load', () => {
+    listeners.forEach(listener => listener && listener())
+  })
+</script>
+
+<body>
+  <!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="position: fixed;" id="mainNav">
+  <div class="navbar-wrapper">
+    <a class="navbar-brand" href="/" >
+      코드블로그_
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav ml-auto">
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="/">HOME</a>
+      </li> -->
+      <li class="nav-item">
+        <a class="nav-link" href="/posts">POSTS</a>
+      </li>
+      <!-- <li class="nav-item">
+          <a class="nav-link" href="/tags">TAGS</a>
+      </li> -->
+      <li class="nav-item">
+          <a class="nav-link" href="/archives">ARCHIVES</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="/about">ABOUT</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+  <!-- Page Header -->
+
+<header
+  class="masthead"
+  style="background-image: url('/img/posts/mobx/mobx.png')"
+>
+  
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-heading">
+            <h1>Mobx의 상태 변화, Action을 알아보자(feat. 비동기 Action)</h1>
+            
+            <span class="meta">
+              <!-- >Posted by
+              <a href="/about"
+                >Hoontae</a
+              >
+              on  -->
+              2020.01.30 &middot; <span class="reading-time" title="Estimated read time">
+  
+   17 mins  read </span>
+
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container post">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto wrapper">
+        
+
+<script>
+  const btnFolded = document.querySelector('.btn.folded')
+  const btnUnfolded = document.querySelector('.btn.unfolded')
+  btnFolded && btnFolded.classList.add('hidden')
+  btnUnfolded && btnUnfolded.classList.remove('hidden')  
+
+  function toggleFold () {
+    const btnFolded = document.querySelector('.btn.folded')
+    const btnUnfolded = document.querySelector('.btn.unfolded')
+    const titleWrapper = document.querySelector('.title-wrapper')
+    const itemWrapper = document.querySelector('.item-wrapper')
+    btnFolded.classList.toggle('hidden')
+    btnUnfolded.classList.toggle('hidden')
+    titleWrapper.classList.toggle('folded')
+    itemWrapper.classList.toggle('folded')
+  }
+</script>
+ <p>Mobx는 리액트에서 사용되어지는 상태 관리 라이브러리입니다. 리액트 자체적으로 state나 useState를 이용해서 상태 관리를 할 수 있지만, 전역적인 상태나 반응적인 변화를 위해서 Mobx와 같은 외부 라이브러리를 사용하기도 합니다.</p>
+
+<p><code class="highlighter-rouge">Mobx</code>에서 상태 변화를 일으키는 것을 <code class="highlighter-rouge">Action</code>이라고 합니다. 이 글에서는 <code class="highlighter-rouge">리액트</code>에서 <code class="highlighter-rouge">Action</code>을 사용하는 것과 <code class="highlighter-rouge">비동기</code> 작업에서는 어떻게 사용해야할 지 살펴보겠습니다.</p>
+
+<p><em>(이 글에서는 <code class="highlighter-rouge">Mobx</code>에 대한 주요 개념이나 사용법을 다루지 않습니다.)</em></p>
+
+<p>[참조] 이 글을 작성하면서 아래의 글에 도움을 받았습니다.</p>
+
+<ul>
+  <li><a href="https://byseop.netlify.com/mobx-async/">Mobx와 비동기 작업 - React - BYSEOP’s devlog</a></li>
+  <li><a href="https://velog.io/@velopert/MobX-2-%EB%A6%AC%EC%95%A1%ED%8A%B8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EC%97%90%EC%84%9C-MobX-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0-oejltas52z">MobX (2) 리액트 프로젝트에서 MobX 사용하기 - velog</a></li>
+</ul>
+
+<hr />
+
+<h3 id="1-작업-환경-구성">1. 작업 환경 구성</h3>
+
+<p>먼저 리액트와 Mobx를 사용할 수 있는 환경을 구성하겠습니다. 작업 순서는 다음과 같습니다.</p>
+
+<ol>
+  <li>create-react-app으로 리액트 프로젝트 생성</li>
+  <li>프로젝트 eject 및 decorator 사용 환경 구성</li>
+  <li>mobx 설치 및 실습</li>
+</ol>
+
+<p>먼저 create-react-app을 이용해 실습 프로젝트를 생성합니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npx create-react-app mobx-async-action <span class="nt">--use-npm</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">--use-npm</code> 옵션은 <code class="highlighter-rouge">yarn</code> 대신에 <code class="highlighter-rouge">npm</code>을 사용하기 위한 옵션입니다. 하지 않아도 상관없습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cd </span>mobx-async-action
+<span class="nv">$ </span>npm run eject <span class="c"># eject에 대한 confirm 질문이 나오면 y 입력</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">eject</code> 명령어를 이용해 <code class="highlighter-rouge">webpack</code>설정을 커스텀할 수 있게 만듭니다. 그리고 <code class="highlighter-rouge">decorator</code>를 사용할 수 있도록 babel 설정을 해줍니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm i @babel/plugin-proposal-class-properties @babel/plugin-proposal-decorators
+</code></pre></div></div>
+
+<p>이제 <code class="highlighter-rouge">package.json</code>을 열고 babel 설정을 다음과 같이 수정합니다.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"babel"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"presets"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="s2">"react-app"</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"plugins"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">[</span><span class="s2">"@babel/plugin-proposal-decorators"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"legacy"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">}],</span><span class="w">
+      </span><span class="p">[</span><span class="s2">"@babel/plugin-proposal-class-properties"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"loose"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">}]</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>혹시 vscode에서 데코레이터 때문에 오류가 발생하면, 프로젝트 폴더에 <code class="highlighter-rouge">jsconfig.json</code>파일을 만들고 다음 코드를 추가해주세요.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"experimentalDecorators"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>이제 실습 대상 라이브러리인 <code class="highlighter-rouge">mobx</code>를 설치합니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm i mobx mobx-react
+</code></pre></div></div>
+
+<p>이제 환경 설정이 끝났습니다. 설정이 잘 동작하는지 개발 서버를 구동시켜서 확인해 보겠습니다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm start
+</code></pre></div></div>
+
+<p><img src="/img/posts/mobx/mobx-async-action-ss-1.png" alt="개발 서버 스크린샷" /></p>
+
+<p>이제 CRA를 통해 만든 프로젝트에서 필요 없는 부분을 삭제해주겠습니다.</p>
+
+<p><code class="highlighter-rouge">src</code>폴더에서 <code class="highlighter-rouge">index.css</code>, <code class="highlighter-rouge">logo.svg</code>, <code class="highlighter-rouge">App.css</code>, <code class="highlighter-rouge">App.test.js</code> 파일은 지우고, <code class="highlighter-rouge">index.js</code>와 <code class="highlighter-rouge">App.js</code>파일을 수정해줍니다.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/index.js</span>
+<span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">ReactDOM</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-dom</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">App</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./App</span><span class="dl">'</span>
+<span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">serviceWorker</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./serviceWorker</span><span class="dl">'</span>
+
+<span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nc">App</span> <span class="p">/&gt;,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">root</span><span class="dl">'</span><span class="p">))</span>
+
+<span class="c1">// If you want your app to work offline and load faster, you can change</span>
+<span class="c1">// unregister() to register() below. Note this comes with some pitfalls.</span>
+<span class="c1">// Learn more about service workers: https://bit.ly/CRA-PWA</span>
+<span class="nx">serviceWorker</span><span class="p">.</span><span class="nx">unregister</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/App.js</span>
+<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span>
+
+<span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className=</span><span class="s1">'App'</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>mobx-async-action<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span>
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="2-mobx-action-살펴보기">2. Mobx Action 살펴보기</h3>
+
+<p>먼저 <code class="highlighter-rouge">mobx</code>의 <code class="highlighter-rouge">observable</code> 변수를 선언해주고, 변수에 <code class="highlighter-rouge">reaction</code>을 걸어두겠습니다. 그리고 간단히 값을 변경시키는 버튼과 로직을 만들겠습니다.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/App.js</span>
+<span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Component</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">observable</span><span class="p">,</span> <span class="nx">reaction</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">mobx</span><span class="dl">'</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">observer</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">mobx-react</span><span class="dl">'</span>
+
+<span class="p">@</span><span class="nd">observer</span>
+<span class="kd">class</span> <span class="nx">App</span> <span class="kd">extends</span> <span class="nx">Component</span> <span class="p">{</span>
+  <span class="p">@</span><span class="nd">observable</span> <span class="nx">number1</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="p">@</span><span class="nd">observable</span> <span class="nx">number2</span> <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="kd">constructor</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">super</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span>
+    <span class="nx">reaction</span><span class="p">(</span>
+      <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">number1</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">number2</span><span class="p">],</span>
+      <span class="p">([</span><span class="nx">number1</span><span class="p">,</span> <span class="nx">number2</span><span class="p">])</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Reaction:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">number1</span><span class="p">,</span> <span class="nx">number2</span><span class="p">),</span>
+    <span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="nx">componentDidUpdate</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Updated:</span><span class="dl">'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">number1</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">number2</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="nx">handleClick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+  <span class="p">}</span>
+
+  <span class="nx">getRandomNumber</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">ceil</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+
+  <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span>
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className=</span><span class="s1">'App'</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>mobx-async-action<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h5</span><span class="p">&gt;</span>number1: <span class="si">{</span><span class="k">this</span><span class="p">.</span><span class="nx">number1</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">h5</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h5</span><span class="p">&gt;</span>number2: <span class="si">{</span><span class="k">this</span><span class="p">.</span><span class="nx">number2</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">h5</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onClick=</span><span class="si">{</span><span class="k">this</span><span class="p">.</span><span class="nx">handleClick</span><span class="si">}</span><span class="p">&gt;</span>random<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">App</code>컴포넌트는 <code class="highlighter-rouge">number1</code>과 <code class="highlighter-rouge">number2</code>라는 상태를 가지고 있고, 버튼을 클릭하면 두 상태 변수에 랜덤한 값이 저장됩니다. 상태가 변경되면 콘솔에 <code class="highlighter-rouge">Reaction:</code> 으로 출력되도록 <code class="highlighter-rouge">reaction</code>을 만들어 두었고, 컴포넌트가 변경되면 <code class="highlighter-rouge">Updated:</code>로 콘솔에 출력됩니다.</p>
+
+<p>먼저 <code class="highlighter-rouge">random</code>버튼을 클릭해보겠습니다.</p>
+
+<p>제 경우에는 다음과 같이 출력되었습니다.</p>
+
+<pre><code class="language-output"># output
+Reaction: 2 0
+Reaction: 2 1
+Updated: 2 1
+</code></pre>
+
+<p>출력을 분석해보면 두 개의 상태 변수가 변경될 때 각각의 <code class="highlighter-rouge">Action</code>이 총 2번 발생되고, <code class="highlighter-rouge">Action</code>이 끝나면 컴포넌트가 업데이트 되는 것을 알 수 있습니다.</p>
+
+<p>그렇다면 비동기 상황에서는 어떻게 동작할까요? <code class="highlighter-rouge">handleClick</code>메소드에 <code class="highlighter-rouge">setTimeout</code>으로 비동기적 상황을 만들어 보겠습니다.</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/App.js</span>
+<span class="nx">handleClick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// 1초 후에 number의 값이 변하는 동작</span>
+  <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+  <span class="p">},</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<pre><code class="language-output"># output
+Reaction: 4 0
+Updated: 4 0
+Reaction: 4 6
+Updated: 4 6
+</code></pre>
+
+<p><code class="highlighter-rouge">setTimeout</code>함수를 이용해서 1초 후에 값이 변하는 <code class="highlighter-rouge">Action</code>을 실행시켜보았습니다. 아까와 같이 2번의 <code class="highlighter-rouge">Action</code>이 발생하였고, 이번에는 <code class="highlighter-rouge">Updated</code> 또한 2번이 발생했습니다.</p>
+
+<p><code class="highlighter-rouge">mobx</code>에서는 이러한 상태 변화를 하나로 묶는 <code class="highlighter-rouge">action</code>함수를 제공합니다. 데코레이터를 사용해서 <code class="highlighter-rouge">handleClick</code>메소드를 <code class="highlighter-rouge">action</code>으로 감싸보겠습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/App.js</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">observable</span><span class="p">,</span> <span class="nx">reaction</span><span class="p">,</span> <span class="nx">action</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">mobx</span><span class="dl">'</span>
+
+<span class="c1">// 데코레이터를 이용해 mobx의 action으로 handleClick 메소드를 감싸줌</span>
+<span class="p">@</span><span class="nd">action</span>
+<span class="nx">handleClick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<pre><code class="language-output"># output
+Reaction: 5 9
+Updated: 5 9
+</code></pre>
+
+<p>실행되는 메소드를 <code class="highlighter-rouge">action</code>으로 감싸주니 두 변수의 상태가 변했음에도 한번의 <code class="highlighter-rouge">Action</code>만 발생하는 것을 볼 수 있습니다. 또한 <code class="highlighter-rouge">mobx</code>의 <code class="highlighter-rouge">action</code>으로 감싸주면 개발자도구를 통해 변화의 정보를 추적할 수 있습니다.</p>
+
+<p>이번에는 하나의 함수 안에서 <code class="highlighter-rouge">action</code>으로 감싼 함수를 호출해보도록 하겠습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/App.js</span>
+<span class="nx">handleClick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">setNumber1</span><span class="p">()</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">setNumber2</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="p">@</span><span class="nd">action</span> <span class="nx">setNumber1</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">())</span>
+<span class="p">@</span><span class="nd">action</span> <span class="nx">setNumber2</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">())</span>
+</code></pre></div></div>
+
+<pre><code class="language-output"># output
+Reaction: 3 0
+Reaction: 3 3
+Updated: 3 3
+</code></pre>
+
+<p><code class="highlighter-rouge">action</code>으로 감싼 함수를 각각 호출해보니 독립적으로 <code class="highlighter-rouge">Action</code>이 발생했습니다. 다시 <code class="highlighter-rouge">handleClick</code>메소드에 <code class="highlighter-rouge">action</code>을 감싸봅시다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/App.js</span>
+<span class="p">@</span><span class="nd">action</span>
+<span class="nx">handleClick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">setNumber1</span><span class="p">()</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">setNumber2</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="p">@</span><span class="nd">action</span> <span class="nx">setNumber1</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">())</span>
+<span class="p">@</span><span class="nd">action</span> <span class="nx">setNumber2</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">())</span>
+</code></pre></div></div>
+
+<pre><code class="language-output"># output
+Reaction: 5 3
+Updated: 5 3
+</code></pre>
+
+<p><code class="highlighter-rouge">action</code>을 감싸주니 독립된 <code class="highlighter-rouge">Action</code>을 하나로 묶어 동작하게 됩니다. 또한 <code class="highlighter-rouge">setNumber1</code>과 <code class="highlighter-rouge">setNumber2</code>에 <code class="highlighter-rouge">@action</code>을 제거하더라도 하나의 <code class="highlighter-rouge">Action</code>으로 묶여 동작하는 것을 볼 수 있습니다.</p>
+
+<p>이번에는 <code class="highlighter-rouge">action</code>내에서 비동기 동작을 관찰해 보겠습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/App.js</span>
+<span class="p">@</span><span class="nd">action</span>
+<span class="nx">handleClick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+  <span class="p">},</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<pre><code class="language-output"># output
+Reaction: 1 0
+Updated: 1 0
+Reaction: 1 4
+Updated: 1 4
+</code></pre>
+
+<p>동작하는 함수에 <code class="highlighter-rouge">action</code>을 적용시켰음에도 전혀 그렇지 않은 것처럼 동작합니다. mobx 문서에서는 다음과 같이 말합니다.</p>
+
+<blockquote>
+  <p><em>The action wrapper / decorator only affects the currently running function, not functions that are scheduled (but not invoked) by the current function!</em></p>
+</blockquote>
+
+<p><code class="highlighter-rouge">action</code>으로 감싸주더라도 그 영향은 현재 실행 중인 함수 내에만 적용됩니다. <code class="highlighter-rouge">setTimeout</code> 또는 <code class="highlighter-rouge">Promise.then</code>, <code class="highlighter-rouge">async</code>함수 등 새롭게 호출되는 함수의 동작에 대해서는 <code class="highlighter-rouge">action</code>의 기능을 적용받을 수 없습니다.</p>
+
+<hr />
+
+<h3 id="3-비동기-작업의-action-다루기">3. 비동기 작업의 Action 다루기</h3>
+
+<p>mobx에서 이러한 비동기 작업에서 <code class="highlighter-rouge">Action</code>을 처리하기 위해서는 새로운 <code class="highlighter-rouge">action</code>을 적용해야 합니다. mobx 문서에서 다루고 있는 방법들을 살펴보겠습니다.</p>
+
+<h4 id="3-1-다른-action으로-감싸기">3-1. 다른 action으로 감싸기</h4>
+
+<p>비동기 작업에서의 <code class="highlighter-rouge">Action</code>이 발생하는 부분을 다른 <code class="highlighter-rouge">action</code>으로 감싸주도록 하겠습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/App.js</span>
+<span class="c1">// @action</span>
+<span class="nx">handleClick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">setNumbers</span><span class="p">()</span>
+  <span class="p">},</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="p">@</span><span class="nd">action</span>
+<span class="nx">setNumbers</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>이렇게 비동기 작업 자체를 <code class="highlighter-rouge">action</code>으로 감싸 새로운 함수로 만들 수 있습니다. 만약 메인으로 호출하는 <code class="highlighter-rouge">handleClick</code>메소드에 <code class="highlighter-rouge">Action</code>이 발생할 일이 없다면 <code class="highlighter-rouge">@action</code>을 제거해도 됩니다.</p>
+
+<p>데코레이터를 이용하지 않고 <code class="highlighter-rouge">action</code>을 감싸주는 방법도 있습니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/App.js</span>
+<span class="p">@</span><span class="nd">action</span>
+<span class="nx">handleClick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">setTimeout</span><span class="p">(</span>
+    <span class="nx">action</span><span class="p">(</span><span class="dl">'</span><span class="s1">setNumbersAsync1</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+    <span class="p">}),</span>
+    <span class="mi">1000</span><span class="p">,</span>
+  <span class="p">)</span>
+
+  <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span>
+    <span class="nx">action</span><span class="p">(</span><span class="dl">'</span><span class="s1">setNumbersAsync2</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+    <span class="p">}),</span>
+  <span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>데코레이터를 사용하지 않고 <code class="highlighter-rouge">action</code>으로 감싸면서 새로운 함수를 생성합니다. <code class="highlighter-rouge">action</code>으로 생성된 <code class="highlighter-rouge">setNumbersAsync</code>함수가 실행 로직이 아니라 <code class="highlighter-rouge">setTimeout</code>과 <code class="highlighter-rouge">Promise.then</code>의 콜백함수 자리를 대신하고 있습니다.</p>
+
+<h4 id="3-2-runinaction-사용하기">3-2. runInAction 사용하기</h4>
+
+<p>비동기 작업이 있을 때마다 <code class="highlighter-rouge">action</code>으로 감싸주거나, 새로운 함수를 선언하는 것은 약간 귀찮은 일이 될 수도 있습니다. mobx는 <code class="highlighter-rouge">runInAction</code>함수를 통해 실행 로직에서 직관성을 잃지 않고 <code class="highlighter-rouge">Action</code>을 발생 시킬 수 있게합니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/App.js</span>
+<span class="p">@</span><span class="nd">action</span>
+<span class="nx">handleClick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">().</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">runInAction</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+    <span class="p">})</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">runInAction</code>함수의 첫번째 인자로 익명의 함수를 넘겨줍니다. <code class="highlighter-rouge">runInAction</code>은 인자로 받은 함수를 즉시 실행하며 <code class="highlighter-rouge">Action</code>을 묶어주게 됩니다.</p>
+
+<h4 id="3-3-asyncawait">3-3. async/await</h4>
+
+<p>만약 비동기 작업을 호출하는 함수가 <code class="highlighter-rouge">async</code>함수라면 <code class="highlighter-rouge">await</code>이 실행된 후에는 <code class="highlighter-rouge">action</code>의 적용되지 않습니다. <code class="highlighter-rouge">await</code> 이후의 코드 블록에서 <code class="highlighter-rouge">상태 변화</code>가 발생한다면 <code class="highlighter-rouge">runInAction</code>으로 감싸주어야 합니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">@</span><span class="nd">action</span>
+<span class="nx">handleClick</span> <span class="o">=</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">()</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<pre><code class="language-output"># output
+Reaction: 3 0
+Updated: 3 0
+Reaction: 3 7
+Updated: 3 7
+</code></pre>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">@</span><span class="nd">action</span>
+<span class="nx">handleClick</span> <span class="o">=</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">()</span>
+  <span class="nx">runInAction</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<pre><code class="language-output"># output
+Reaction: 8 3
+Updated: 8 3
+</code></pre>
+
+<h4 id="3-4-flow">3-4 flow</h4>
+
+<p><code class="highlighter-rouge">flow</code>를 사용하면 코드는 가장 깔끔하고 직관적이게 작성할 수 있습니다. 하지만 약간 다른 방법으로 비동기 작업을 제어합니다. <code class="highlighter-rouge">async/await</code>와 비슷하지만 <code class="highlighter-rouge">function *</code> 제너레이터를 사용합니다. <code class="highlighter-rouge">await</code> 대신에 제너레이터의 <code class="highlighter-rouge">yield</code>를 사용합니다. <code class="highlighter-rouge">runInAction</code>과 같은 새로운 <code class="highlighter-rouge">Action</code>을 감싸 줄 필요가 없어집니다.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">constructor</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">super</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span>
+    <span class="c1">// flow 내에서 this를 사용하기 위해 바인딩</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">handleClick</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">handleClick</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="nx">handleClick</span> <span class="o">=</span> <span class="nx">flow</span><span class="p">(</span><span class="kd">function</span><span class="o">*</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">yield</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">()</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">number1</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">number2</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRandomNumber</span><span class="p">()</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="마무리">마무리</h3>
+
+<p>지금까지 mobx의 상태 변화 Action을 다루는 법을 살펴보았습니다. 상태 변화를 감지하여 <code class="highlighter-rouge">Action</code>이 발생할 때, 여러 번의 <code class="highlighter-rouge">Action</code>을 하나로 묶어주어 상태 변화를 잘 처리할 수 있도록 여러 가지 방법을 살펴보았습니다.</p>
+
+<p>특히 비동기 작업에서의 <code class="highlighter-rouge">Action</code> 적용은 컴포넌트의 업데이트에도 영향을 주기 때문에, 직관적이고 보기 좋은 코드를 작성할 뿐만 아니라, 컴포넌트 라이프 사이클을 이해하고 <code class="highlighter-rouge">Action</code>과 함께 잘 다루는 법을 익혀야 할 것 같습니다.</p>
+
+        <div class="post-bottom-margin"></div>
+         
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#mobx"
+  title=""
+>
+  <span class="label">
+      mobx
+  </span>
+  
+</span>
+  
+
+
+
+
+<span 
+  class="tag tag-chip btn-route"
+  path="/tags#react"
+  title=""
+>
+  <span class="label">
+      react
+  </span>
+  
+</span>
+ 
+        <div></div>
+         <div style="height: 30px;"></div>
+<div id="disqus_thread"></div>
+<script>
+  /**
+   *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+   *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+  /*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+  (function () {
+    // DON'T EDIT BELOW THIS LINE
+    var d = document,
+      s = d.createElement("script");
+    s.src = "https://itsdone.disqus.com/embed.js";
+    s.setAttribute("data-timestamp", +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+ 
+
+        <div class="post-bottom-margin"></div>
+
+        <!-- <div class="clearfix">
+          
+          <a
+            class="btn btn-primary float-left"
+            href="/posts/7"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Javascript의 비동기 처리, async/await를 알아보자"
+            >&larr; Previous<span class="d-none d-md-inline"> Post</span></a
+          >
+           
+          <a
+            class="btn btn-primary float-right"
+            href="/posts/9"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            title="Node와 Babel + Typesciprt + Eslint 개발 환경 구성하기"
+            >Next<span class="d-none d-md-inline"> Post</span> &rarr;</a
+          >
+          
+        </div> -->
+      </div>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <ul class="list-inline text-center">
+          
+          <li class="list-inline-item">
+            <a href="mailto:kadr8941@gmail.com">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="far fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+          
+          
+          
+          
+          <li class="list-inline-item">
+            <a href="https://github.com/hoontae24">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="copyright text-muted">Copyright &copy; hoontae 2020</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/vendor/startbootstrap-clean-blog/js/clean-blog.min.js"></script>
+
+<script src="/assets/scripts.js"></script>
+<script src="/assets/js/post.js"></script>
+<script src="/assets/js/global.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151335869-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151335869-1');
+</script>
+
+
+  <div class="scrollToTopButton" onclick="_toTop()">
+  <i class="fas fa-arrow-up"></i>
+</div>
+
+<script>
+  const _toTop = () => {
+    const isHigh = window.scrollY > 2000
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: isHigh ? 'auto' : 'smooth',
+    })
+  }
+  onMount(() => {
+    const btn = document.querySelector('div.scrollToTopButton')
+    const showBtn = () => {
+      window.scrollY > 100
+        ? !btn.classList.contains('show') && btn.classList.add('show')
+        : btn.classList.contains('show') && btn.classList.remove('show')
+    }
+    showBtn()
+    window.addEventListener('scroll', showBtn)
+  })
+</script>
+
+<style>
+  .scrollToTopButton {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    right: 40px;
+    bottom: 40px;
+
+    cursor: pointer;
+    border: 1px solid #000000a2;
+    color: #000000a2;
+    background-color: #ffffff99;
+    border-radius: 50%;
+    overflow: hidden;
+    visibility: hidden;
+  }
+  .scrollToTopButton.show {
+    visibility: visible;
+  }
+  @media only screen and (max-width: 767px) {
+    .scrollToTopButton {
+      width: 30px;
+      height: 30px;
+      right: 20px;
+      bottom: 20px;
+    }
+  }
+</style>
+
+</body>
+</html>
